@@ -1,2 +1,3 @@
 # scanfc
-Smart Class Attendance using NFC
+[WIP] Smart Class Attendance using NFC
+
