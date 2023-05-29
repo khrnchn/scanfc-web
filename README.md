@@ -1,3 +1,3 @@
 # scanfc
-[WIP] Smart Class Attendance using NFC
+[WIP] Smart Class Attendance using NFC Web Based System For Admin and Lecturer
 
