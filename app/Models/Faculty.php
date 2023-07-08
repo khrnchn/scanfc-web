@@ -11,7 +11,7 @@ class Faculty extends Model
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['name'];
+    protected $fillable = ['name', 'code'];
 
     protected $searchableFields = ['*'];
 
@@ -28,5 +28,10 @@ class Faculty extends Model
     public function subjects()
     {
         return $this->hasMany(Subject::class);
+    }
+
+    public function venues()
+    {
+        return $this->hasMany(Venue::class);
     }
 }

@@ -10,6 +10,8 @@ use Filament\Forms\Components\Card;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\FacultyResource\Pages;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Support\Str;
 
 class FacultyResource extends Resource
 {
@@ -25,15 +27,41 @@ class FacultyResource extends Resource
     {
         return $form->schema([
             Card::make()->schema([
-                Grid::make(['default' => 0])->schema([
+                Grid::make(['default' => 12])->schema([
                     TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Name')
+                        ->placeholder('Enter faculty name')
+                        ->lazy()
+                        ->afterStateUpdated(function (string $context, $state, callable $set) {
+                            if ($context === 'create') {
+                                $words = explode(' ', $state);
+                                $code = '';
+
+                                foreach ($words as $word) {
+                                    if (strtolower($word) === 'dan') {
+                                        continue; // Skip the word "dan"
+                                    }
+
+                                    $code .= strtoupper(substr($word, 0, 1));
+                                }
+
+                                $set('code', $code);
+                            }
+                        })
                         ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
+                        ]),
+
+                    TextInput::make('code')
+                        ->disabled()
+                        ->unique(Faculty::class, 'code', ignoreRecord: true)
+                        ->columnSpan([
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
                         ]),
                 ]),
             ]),
@@ -47,8 +75,25 @@ class FacultyResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->toggleable()
-                    ->searchable(true, null, true)
                     ->limit(50),
+
+                Tables\Columns\TextColumn::make('code')
+                    ->toggleable()
+                    ->limit(50),
+
+                TextColumn::make('venues')
+                    ->getStateUsing(function ($record) {
+                        $faculty = Faculty::find($record->id);
+                        $venueCount = $faculty->venues()->count();
+                        return $venueCount;
+                    }),
+
+                TextColumn::make('subjects')
+                    ->getStateUsing(function ($record) {
+                        $faculty = Faculty::find($record->id);
+                        $subjectCount = $faculty->subjects()->count();
+                        return $subjectCount;
+                    }),
             ])
             ->filters([DateRangeFilter::make('created_at')]);
     }
@@ -56,6 +101,7 @@ class FacultyResource extends Resource
     public static function getRelations(): array
     {
         return [
+            FacultyResource\RelationManagers\VenuesRelationManager::class,
             FacultyResource\RelationManagers\SubjectsRelationManager::class,
         ];
     }
@@ -73,5 +119,4 @@ class FacultyResource extends Resource
     {
         return static::getModel()::count();
     }
-
 }

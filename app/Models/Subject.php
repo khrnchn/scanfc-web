@@ -11,7 +11,7 @@ class Subject extends Model
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['name', 'faculty_id'];
+    protected $fillable = ['name', 'code', 'faculty_id', 'image_path'];
 
     protected $searchableFields = ['*'];
 

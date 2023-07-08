@@ -12,6 +12,8 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\SubjectResource\Pages;
+use App\Models\Faculty;
+use Filament\Forms\Components\FileUpload;
 
 class SubjectResource extends Resource
 {
@@ -31,19 +33,38 @@ class SubjectResource extends Resource
                     TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
-                        ->placeholder('Name')
+                        ->placeholder('Enter subject name')
+                        ->columnSpan([
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
+                        ]),
+
+                    TextInput::make('code')
+                        ->required()
+                        ->rules(['max:255', 'string'])
+                        ->placeholder('Enter subject code')
+                        ->columnSpan([
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
+                        ]),
+
+                    Select::make('faculty_id')
+                        ->rules(['exists:faculties,id'])
+                        ->required()
+                        ->options(Faculty::all())
+                        ->searchable()
+                        ->placeholder('Select faculty')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
                         ]),
 
-                    Select::make('faculty_id')
-                        ->rules(['exists:faculties,id'])
-                        ->required()
-                        ->relationship('faculty', 'name')
-                        ->searchable()
-                        ->placeholder('Faculty')
+                    FileUpload::make('image_path')
+                        ->placeholder('Upload subject image')
+                        ->image()
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
