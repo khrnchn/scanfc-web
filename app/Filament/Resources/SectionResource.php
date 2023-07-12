@@ -21,6 +21,10 @@ class SectionResource extends Resource
 
     protected static ?string $navigationGroup = 'Subject';
 
+    protected static ?string $navigationLabel = 'Group';
+
+    protected static ?string $slug = 'groups';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form

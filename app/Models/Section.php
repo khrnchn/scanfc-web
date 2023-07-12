@@ -11,7 +11,7 @@ class Section extends Model
     use HasFactory;
     use Searchable;
 
-    protected $fillable = ['subject_id', 'name'];
+    protected $fillable = ['subject_id', 'lecturer_id', 'name'];
 
     protected $searchableFields = ['*'];
 

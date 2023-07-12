@@ -22,6 +22,12 @@ class ClassroomResource extends Resource
 
     protected static ?string $navigationGroup = 'Subject';
 
+    protected static ?string $navigationLabel = 'Schedule';
+
+    protected static ?string $slug = 'schedules';
+
+    protected static ?string $modelLabel = 'Schedule';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form

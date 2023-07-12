@@ -20,6 +20,8 @@ class SectionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'sections';
 
+    protected static ?string $title = 'Groups';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form
@@ -34,6 +36,16 @@ class SectionsRelationManager extends RelationManager
                         'md' => 12,
                         'lg' => 12,
                     ]),
+                Select::make('lecturer_id')
+                    ->rules(['exists:lecturers,id'])
+                    ->relationship('lecturer', 'staff_id')
+                    ->searchable()
+                    ->placeholder('Select lecturer')
+                    ->columnSpan([
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
+                    ]),
             ]),
         ]);
     }
@@ -45,13 +57,11 @@ class SectionsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('subject.name')
                     ->limit(50),
                 Tables\Columns\TextColumn::make('name')
-                    ->label('Section')
+                    ->label('Group')
                     ->limit(50),
                 TextColumn::make('qty')
-                    ->label('Students')
-                    ->default(30),
+                    ->label('Students'),
                 TextColumn::make('taught_by')
-                    ->default('Dr. Khairin')
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')

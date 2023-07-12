@@ -14,7 +14,6 @@ class Classroom extends Model
     protected $fillable = [
         'subject_id',
         'section_id',
-        'lecturer_id',
         'venue_id',
         'name',
         'start_at',

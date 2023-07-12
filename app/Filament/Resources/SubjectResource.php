@@ -55,19 +55,8 @@ class SubjectResource extends Resource
                             'lg' => 6,
                         ]),
 
-                    Select::make('faculty_id')
-                        ->rules(['exists:faculties,id'])
-                        ->required()
-                        ->options(Faculty::all())
-                        ->searchable()
-                        ->placeholder('Select faculty')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
                     FileUpload::make('image_path')
+                        ->label('Subject image')
                         ->placeholder('Upload subject image')
                         ->image()
                         ->columnSpan([

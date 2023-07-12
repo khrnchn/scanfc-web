@@ -14,7 +14,7 @@ class CreateUser extends CreateRecord
     protected function handleRecordCreation(array $data): User
     {
         $user = User::create($data);
-        $user->assignRole('teacher');
+        $user->assignRole('lecturer');
         $permissions = $user->getPermissionsViaRoles();
         $user->givePermissionTo($permissions);
 

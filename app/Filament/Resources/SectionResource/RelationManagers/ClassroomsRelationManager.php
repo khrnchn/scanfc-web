@@ -19,6 +19,8 @@ class ClassroomsRelationManager extends RelationManager
 {
     protected static string $relationship = 'classrooms';
 
+    protected static ?string $title = 'Schedules';
+
     protected static ?string $recordTitleAttribute = 'name';
 
     public static function form(Form $form): Form
