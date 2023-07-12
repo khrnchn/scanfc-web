@@ -12,7 +12,8 @@ return new class extends Migration {
     {
         Schema::create('sections', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('subject_id');
+            $table->foreignId('subject_id');
+            $table->foreignId('lecturer_id');
             $table->string('name');
 
             $table->timestamps();

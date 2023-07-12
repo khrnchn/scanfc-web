@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Subject;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class SubjectSeeder extends Seeder
 {
@@ -12,8 +13,32 @@ class SubjectSeeder extends Seeder
      */
     public function run(): void
     {
-        Subject::factory()
-            ->count(5)
-            ->create();
+        // name, code, faculty ID
+        $subjects = [
+            [
+                'name' => 'E Commerce Application',
+                'code' => 'ISP641',
+                'faculty_id' => 1,
+            ],
+            [
+                'name' => 'Project Development',
+                'code' => 'CSP650',
+                'faculty_id' => 1,
+            ],
+            [
+                'name' => 'Artificial Intelligence',
+                'code' => 'ITS662',
+                'faculty_id' => 1,
+            ],
+            [
+                'name' => 'Software Testing',
+                'code' => 'ISP601',
+                'faculty_id' => 1,
+            ],
+        ];
+
+        foreach ($subjects as $subjectData) {
+            $subject = Subject::create($subjectData);
+        }
     }
 }

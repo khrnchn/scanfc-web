@@ -12,10 +12,9 @@ return new class extends Migration {
     {
         Schema::create('classrooms', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('subject_id');
-            $table->unsignedBigInteger('section_id');
-            $table->unsignedBigInteger('lecturer_id');
-            $table->unsignedBigInteger('venue_id');
+            $table->foreignId('subject_id');
+            $table->foreignId('section_id');
+            $table->foreignId('venue_id');
             $table->string('name');
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
