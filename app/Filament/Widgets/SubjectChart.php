@@ -15,7 +15,7 @@ class SubjectChart extends BarChartWidget
         return [
             'datasets' => [
                 [
-                    'label' => 'Student attendance',
+                    'label' => 'subjects',
                     'data' => [0, 10, 5, 2, 21, 32, 45, 74, 65, 45, 77, 89],
                     'backgroundColor' => [
                         'rgba(255, 99, 132, 0.2)',   // Jan - Red

@@ -32,6 +32,7 @@ class LecturerResource extends Resource
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->placeholder('Staff Id')
+                        ->mask(fn (TextInput\Mask $mask) => $mask->pattern('{STAFF}000'))
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -73,7 +74,6 @@ class LecturerResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('staff_id')
                     ->toggleable()
-                    ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user.name')
                     ->toggleable()

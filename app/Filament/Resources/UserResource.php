@@ -44,7 +44,7 @@ class UserResource extends Resource
                         ->unique(
                             'users',
                             'email',
-                            fn(?Model $record) => $record
+                            fn (?Model $record) => $record
                         )
                         ->email()
                         ->placeholder('Email')
@@ -57,9 +57,9 @@ class UserResource extends Resource
                     TextInput::make('password')
                         ->required()
                         ->password()
-                        ->dehydrateStateUsing(fn($state) => \Hash::make($state))
+                        ->dehydrateStateUsing(fn ($state) => \Hash::make($state))
                         ->required(
-                            fn(Component $livewire) => $livewire instanceof
+                            fn (Component $livewire) => $livewire instanceof
                                 Pages\CreateUser
                         )
                         ->placeholder('Password')
@@ -73,6 +73,7 @@ class UserResource extends Resource
                         ->rules(['max:255', 'string'])
                         ->required()
                         ->placeholder('Phone No')
+                        ->mask(fn (TextInput\Mask $mask) => $mask->pattern('+{601}0-00000000'))
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -107,8 +108,6 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            UserResource\RelationManagers\StudentsRelationManager::class,
-            UserResource\RelationManagers\LecturersRelationManager::class,
         ];
     }
 

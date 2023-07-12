@@ -2,11 +2,19 @@
 
 namespace App\Filament\Resources\FacultyResource\RelationManagers;
 
+use App\Filament\Resources\SubjectResource;
+use App\Filament\Resources\SubjectResource\Pages\ViewSubject;
+use App\Models\Faculty;
 use Filament\Forms;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Pages\Actions\ViewAction;
 use Filament\Resources\Form;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -21,13 +29,49 @@ class SubjectsRelationManager extends RelationManager
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('name')
+                TextInput::make('name')
+                    ->rules(['max:255', 'string'])
                     ->required()
-                    ->maxLength(255),
+                    ->placeholder('Enter subject name')
+                    ->columnSpan([
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
+                    ]),
 
-                Forms\Components\TextInput::make('code')
+                TextInput::make('code')
                     ->required()
-                    ->maxLength(255),
+                    ->rules(['max:255', 'string'])
+                    ->placeholder('Enter subject code')
+                    ->columnSpan([
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
+                    ]),
+
+                // takyah sebab dalam relation manager
+
+                // Select::make('faculty_id')
+                //     ->label('Faculty')
+                //     ->rules(['exists:faculties,id'])
+                //     ->required()
+                //     ->options(Faculty::all()->pluck('name', 'id'))
+                //     ->searchable()
+                //     ->placeholder('Select faculty')
+                //     ->columnSpan([
+                //         'default' => 12,
+                //         'md' => 12,
+                //         'lg' => 12,
+                //     ]),
+
+                FileUpload::make('image_path')
+                    ->placeholder('Upload subject image')
+                    ->image()
+                    ->columnSpan([
+                        'default' => 12,
+                        'md' => 12,
+                        'lg' => 12,
+                    ]),
             ]);
     }
 
@@ -36,7 +80,7 @@ class SubjectsRelationManager extends RelationManager
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
-                TextColumn::make('code'),
+                TextColumn::make('code')
             ])
             ->filters([
                 //
@@ -45,6 +89,12 @@ class SubjectsRelationManager extends RelationManager
                 Tables\Actions\CreateAction::make(),
             ])
             ->actions([
+                Action::make('view')
+                    ->color('secondary')
+                    ->icon('heroicon-s-eye')
+                    ->action(function ($record, $livewire) {
+                        $livewire->redirect(SubjectResource::getURL('view', $record->id));
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

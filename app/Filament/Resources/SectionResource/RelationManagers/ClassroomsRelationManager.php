@@ -11,6 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
 
@@ -28,49 +29,62 @@ class ClassroomsRelationManager extends RelationManager
                     ->rules(['exists:subjects,id'])
                     ->relationship('subject', 'name')
                     ->searchable()
-                    ->placeholder('Subject')
+                    ->placeholder('Select subject')
                     ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
                     ]),
 
                 Select::make('lecturer_id')
                     ->rules(['exists:lecturers,id'])
                     ->relationship('lecturer', 'staff_id')
                     ->searchable()
-                    ->placeholder('Lecturer')
+                    ->placeholder('Select lecturer')
                     ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
+                    ]),
+
+                Select::make('venue_id')
+                    ->rules(['exists:venues,id'])
+                    ->relationship('venue', 'name')
+                    ->searchable()
+                    ->placeholder('Select venue')
+                    ->columnSpan([
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
                     ]),
 
                 TextInput::make('name')
                     ->rules(['max:255', 'string'])
-                    ->placeholder('Name')
+                    ->placeholder('Enter lecture or lab')
                     ->columnSpan([
                         'default' => 12,
                         'md' => 12,
                         'lg' => 12,
                     ]),
 
-                DatePicker::make('start_at')
+                DateTimePicker::make('start_at')
                     ->rules(['date'])
-                    ->placeholder('Start At')
+                    ->placeholder('Select start time')
+                    ->withoutSeconds()
                     ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
                     ]),
 
-                DatePicker::make('end_at')
+                DateTimePicker::make('end_at')
                     ->rules(['date'])
-                    ->placeholder('End At')
+                    ->placeholder('Select end time')
+                    ->withoutSeconds()
                     ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
                     ]),
             ]),
         ]);
@@ -80,12 +94,17 @@ class ClassroomsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('subject.name')->limit(50),
-                Tables\Columns\TextColumn::make('section.name')->limit(50),
-                Tables\Columns\TextColumn::make('lecturer.staff_id')->limit(50),
-                Tables\Columns\TextColumn::make('name')->limit(50),
-                Tables\Columns\TextColumn::make('start_at')->date(),
-                Tables\Columns\TextColumn::make('end_at')->date(),
+                Tables\Columns\TextColumn::make('subject.name')
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('section.name')
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('lecturer.user.name')
+                    ->limit(50)
+                    ->label('Lecturer'),
+                Tables\Columns\TextColumn::make('name')
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('start_at'),
+                Tables\Columns\TextColumn::make('end_at'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')
@@ -97,7 +116,7 @@ class ClassroomsRelationManager extends RelationManager
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(
+                                fn (
                                     Builder $query,
                                     $date
                                 ): Builder => $query->whereDate(
@@ -108,7 +127,7 @@ class ClassroomsRelationManager extends RelationManager
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(
+                                fn (
                                     Builder $query,
                                     $date
                                 ): Builder => $query->whereDate(

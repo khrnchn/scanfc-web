@@ -15,6 +15,7 @@ class Classroom extends Model
         'subject_id',
         'section_id',
         'lecturer_id',
+        'venue_id',
         'name',
         'start_at',
         'end_at',
@@ -45,5 +46,10 @@ class Classroom extends Model
     public function lecturer()
     {
         return $this->belongsTo(Lecturer::class);
+    }
+
+    public function venue()
+    {
+        return $this->belongsTo(Venue::class);
     }
 }

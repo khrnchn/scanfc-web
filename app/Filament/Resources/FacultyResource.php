@@ -101,8 +101,9 @@ class FacultyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            FacultyResource\RelationManagers\VenuesRelationManager::class,
             FacultyResource\RelationManagers\SubjectsRelationManager::class,
+            FacultyResource\RelationManagers\LecturersRelationManager::class,
+            FacultyResource\RelationManagers\VenuesRelationManager::class,
         ];
     }
 

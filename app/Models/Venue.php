@@ -19,4 +19,9 @@ class Venue extends Model
     {
         return $this->belongsTo(Faculty::class);
     }
+
+    public function classrooms()
+    {
+        return $this->hasMany(Classroom::class);
+    }
 }

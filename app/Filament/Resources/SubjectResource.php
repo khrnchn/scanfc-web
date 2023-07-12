@@ -25,6 +25,11 @@ class SubjectResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -103,8 +108,6 @@ class SubjectResource extends Resource
     {
         return [
             SubjectResource\RelationManagers\SectionsRelationManager::class,
-            SubjectResource\RelationManagers\ClassroomsRelationManager::class,
-            SubjectResource\RelationManagers\LecturersRelationManager::class,
         ];
     }
 

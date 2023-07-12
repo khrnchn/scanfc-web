@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\SubjectResource\RelationManagers;
 
+use App\Filament\Resources\SectionResource;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Resources\{Form, Table};
@@ -12,6 +13,8 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\TextColumn;
 
 class SectionsRelationManager extends RelationManager
 {
@@ -39,8 +42,16 @@ class SectionsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('subject.name')->limit(50),
-                Tables\Columns\TextColumn::make('name')->limit(50),
+                Tables\Columns\TextColumn::make('subject.name')
+                    ->limit(50),
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Section')
+                    ->limit(50),
+                TextColumn::make('qty')
+                    ->label('Students')
+                    ->default(30),
+                TextColumn::make('taught_by')
+                    ->default('Dr. Khairin')
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')
@@ -52,7 +63,7 @@ class SectionsRelationManager extends RelationManager
                         return $query
                             ->when(
                                 $data['created_from'],
-                                fn(
+                                fn (
                                     Builder $query,
                                     $date
                                 ): Builder => $query->whereDate(
@@ -63,7 +74,7 @@ class SectionsRelationManager extends RelationManager
                             )
                             ->when(
                                 $data['created_until'],
-                                fn(
+                                fn (
                                     Builder $query,
                                     $date
                                 ): Builder => $query->whereDate(
@@ -81,6 +92,12 @@ class SectionsRelationManager extends RelationManager
             ])
             ->headerActions([Tables\Actions\CreateAction::make()])
             ->actions([
+                Action::make('view')
+                    ->color('secondary')
+                    ->icon('heroicon-s-eye')
+                    ->action(function ($record, $livewire) {
+                        $livewire->redirect(SectionResource::getURL('view', $record->id));
+                    }),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
             ])

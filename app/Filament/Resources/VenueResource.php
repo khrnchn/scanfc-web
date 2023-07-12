@@ -21,6 +21,8 @@ class VenueResource extends Resource
 
     protected static ?string $navigationGroup = 'Subject';
 
+    protected static bool $shouldRegisterNavigation = false;
+
     public static function form(Form $form): Form
     {
         return $form

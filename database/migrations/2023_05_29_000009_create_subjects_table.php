@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('code');
             $table->unsignedBigInteger('faculty_id');
-            $table->string('image_path');
+            $table->string('image_path')->nullable();
 
             $table->timestamps();
         });

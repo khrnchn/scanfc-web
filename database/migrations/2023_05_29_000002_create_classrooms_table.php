@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->unsignedBigInteger('subject_id');
             $table->unsignedBigInteger('section_id');
             $table->unsignedBigInteger('lecturer_id');
+            $table->unsignedBigInteger('venue_id');
             $table->string('name');
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
