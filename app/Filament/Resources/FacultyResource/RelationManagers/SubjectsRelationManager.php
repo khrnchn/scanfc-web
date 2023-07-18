@@ -16,6 +16,7 @@ use Filament\Resources\Table;
 use Filament\Tables;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -80,7 +81,17 @@ class SubjectsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('name'),
+
+                // ImageColumn::make('image')->defaultImageUrl(function ($record) {
+                //     $identicon = new \Identicon\Identicon();
+
+                //     $imageDataUri = $identicon->getImageDataUri($record->code);
+
+                //     return $imageDataUri;
+                // })
+                //     ->label('')
+                //     ->square(),
+                TextColumn::make('name'),
                 BadgeColumn::make('code')
                     ->color('success'),
             ])
@@ -101,9 +112,9 @@ class SubjectsRelationManager extends RelationManager
                 Tables\Actions\DeleteAction::make(),
             ])
             ->contentGrid([
-                'default' => 1,
-                'md' => 2,
-                'xl' => 3,
+                'default' => 4,
+                'md' => 4,
+                'xl' => 4,
             ]);
     }
 }

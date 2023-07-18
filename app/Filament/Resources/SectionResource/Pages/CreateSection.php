@@ -8,4 +8,5 @@ use App\Filament\Resources\SectionResource;
 class CreateSection extends CreateRecord
 {
     protected static string $resource = SectionResource::class;
+
 }

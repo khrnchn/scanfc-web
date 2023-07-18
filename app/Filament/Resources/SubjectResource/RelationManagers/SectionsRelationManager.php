@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\SubjectResource\RelationManagers;
 
 use App\Filament\Resources\SectionResource;
+use App\Models\Lecturer;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Resources\{Form, Table};
@@ -30,21 +31,28 @@ class SectionsRelationManager extends RelationManager
             Grid::make(['default' => 0])->schema([
                 TextInput::make('name')
                     ->rules(['max:255', 'string'])
-                    ->placeholder('Name')
+                    ->placeholder('Eg: A, B, C...')
                     ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
                     ]),
                 Select::make('lecturer_id')
-                    ->rules(['exists:lecturers,id'])
-                    ->relationship('lecturer', 'staff_id')
+                    ->options(function ($livewire) {
+                        $facultyId = $livewire->ownerRecord->faculty_id;
+
+                        return Lecturer::whereHas('user', function ($query) use ($facultyId) {
+                            $query->where('faculty_id', $facultyId);
+                        })->with('user')->get()->mapWithKeys(function ($lecturer) {
+                            return [$lecturer->id => $lecturer->user->name . ' - ' . $lecturer->staff_id];
+                        });
+                    })
                     ->searchable()
                     ->placeholder('Select lecturer')
                     ->columnSpan([
-                        'default' => 4,
-                        'md' => 4,
-                        'lg' => 4,
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
                     ]),
             ]),
         ]);
@@ -54,14 +62,13 @@ class SectionsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('subject.name')
-                    ->limit(50),
                 Tables\Columns\TextColumn::make('name')
                     ->label('Group')
                     ->limit(50),
                 TextColumn::make('qty')
                     ->label('Students'),
-                TextColumn::make('taught_by')
+                TextColumn::make('lecturer.user.name')
+                    ->label('Taught by'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')

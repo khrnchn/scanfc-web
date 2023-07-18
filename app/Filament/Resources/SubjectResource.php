@@ -14,6 +14,7 @@ use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\SubjectResource\Pages;
 use App\Models\Faculty;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Columns\ImageColumn;
 
 class SubjectResource extends Resource
 {
@@ -59,6 +60,9 @@ class SubjectResource extends Resource
                         ->label('Subject image')
                         ->placeholder('Upload subject image')
                         ->image()
+                        ->disk('public')
+                        ->directory('subject-image')
+                        ->visibility('private')
                         ->columnSpan([
                             'default' => 12,
                             'md' => 12,
@@ -74,6 +78,12 @@ class SubjectResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
+                ImageColumn::make('image')
+                    ->getStateUsing(function ($record) {
+                        $identicon = new \Identicon\Identicon();
+
+                        $identicon->displayImage($record->code);
+                    }),
                 Tables\Columns\TextColumn::make('name')
                     ->toggleable()
                     ->searchable(true, null, true)

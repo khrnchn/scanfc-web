@@ -38,16 +38,16 @@ class ClassroomsRelationManager extends RelationManager
                         'lg' => 4,
                     ]),
 
-                Select::make('lecturer_id')
-                    ->rules(['exists:lecturers,id'])
-                    ->relationship('lecturer', 'staff_id')
-                    ->searchable()
-                    ->placeholder('Select lecturer')
-                    ->columnSpan([
-                        'default' => 4,
-                        'md' => 4,
-                        'lg' => 4,
-                    ]),
+                // Select::make('lecturer_id')
+                //     ->rules(['exists:lecturers,id'])
+                //     ->relationship('lecturer', 'staff_id')
+                //     ->searchable()
+                //     ->placeholder('Select lecturer')
+                //     ->columnSpan([
+                //         'default' => 4,
+                //         'md' => 4,
+                //         'lg' => 4,
+                //     ]),
 
                 Select::make('venue_id')
                     ->rules(['exists:venues,id'])
@@ -100,9 +100,9 @@ class ClassroomsRelationManager extends RelationManager
                     ->limit(50),
                 Tables\Columns\TextColumn::make('section.name')
                     ->limit(50),
-                Tables\Columns\TextColumn::make('lecturer.user.name')
-                    ->limit(50)
-                    ->label('Lecturer'),
+                // Tables\Columns\TextColumn::make('lecturer.user.name')
+                //     ->limit(50)
+                //     ->label('Lecturer'),
                 Tables\Columns\TextColumn::make('name')
                     ->limit(50),
                 Tables\Columns\TextColumn::make('start_at'),
@@ -148,11 +148,6 @@ class ClassroomsRelationManager extends RelationManager
                 MultiSelectFilter::make('section_id')->relationship(
                     'section',
                     'name'
-                ),
-
-                MultiSelectFilter::make('lecturer_id')->relationship(
-                    'lecturer',
-                    'staff_id'
                 ),
             ])
             ->headerActions([Tables\Actions\CreateAction::make()])

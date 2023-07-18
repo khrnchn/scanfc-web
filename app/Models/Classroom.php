@@ -42,11 +42,6 @@ class Classroom extends Model
         return $this->belongsTo(Section::class);
     }
 
-    public function lecturer()
-    {
-        return $this->belongsTo(Lecturer::class);
-    }
-
     public function venue()
     {
         return $this->belongsTo(Venue::class);

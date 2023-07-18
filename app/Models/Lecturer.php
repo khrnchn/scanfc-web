@@ -25,13 +25,13 @@ class Lecturer extends Model
         return $this->belongsTo(Faculty::class);
     }
 
-    public function classrooms()
-    {
-        return $this->hasMany(Classroom::class);
-    }
-
     public function subjects()
     {
         return $this->belongsToMany(Subject::class);
+    }
+
+    public function sections()
+    {
+        return $this->hasMany(Section::class);
     }
 }

@@ -25,7 +25,7 @@ class User extends Authenticatable implements FilamentUser
     use HasProfilePhoto;
     use TwoFactorAuthenticatable;
 
-    protected $fillable = ['name', 'email', 'password', 'phone_no'];
+    protected $fillable = ['name', 'email', 'password', 'faculty_id', 'phone_no'];
 
     protected $searchableFields = ['*'];
 

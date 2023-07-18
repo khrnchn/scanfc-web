@@ -20,6 +20,11 @@ class Section extends Model
         return $this->belongsTo(Subject::class);
     }
 
+    public function lecturer()
+    {
+        return $this->belongsTo(Lecturer::class);
+    }
+
     public function classrooms()
     {
         return $this->hasMany(Classroom::class);
