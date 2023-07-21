@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('students', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('matrix_id');
-            $table->string('nfc_tag');
+            $table->string('nfc_tag')->nullable();
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('faculty_id');
             $table->boolean('is_active');

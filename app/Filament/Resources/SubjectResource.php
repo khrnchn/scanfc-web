@@ -78,12 +78,7 @@ class SubjectResource extends Resource
         return $table
             ->poll('60s')
             ->columns([
-                ImageColumn::make('image')
-                    ->getStateUsing(function ($record) {
-                        $identicon = new \Identicon\Identicon();
-
-                        $identicon->displayImage($record->code);
-                    }),
+                ImageColumn::make('image'),
                 Tables\Columns\TextColumn::make('name')
                     ->toggleable()
                     ->searchable(true, null, true)

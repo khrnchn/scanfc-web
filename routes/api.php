@@ -40,6 +40,7 @@ use App\Http\Controllers\Api\ClassroomAttendancesController;
 |
 */
 
+// login
 Route::post('/login', [AuthController::class, 'login'])->name('api.login');
 
 Route::middleware('auth:sanctum')
@@ -51,6 +52,34 @@ Route::middleware('auth:sanctum')
 Route::name('api.')
     ->middleware('auth:sanctum')
     ->group(function () {
+
+        // registration step 1 -> full name, nickname, email, password, matric id, phone number
+
+        // registration step 2 -> email verification OTP
+        
+        // forgot password -> email
+
+        // reset password -> password reset OTP
+
+        // displaying list of today's classes
+
+        // registering matric id -> full name, email, phone no
+
+        // scanning matric id -> card uid
+
+        // face to face class (nfc) -> attend class (status)
+
+        // face to face class (qr) -> attend class (status)
+        
+        // displaying history of attendance
+
+        // displaying specific class info -> subject name, section, lecturer, start at, end at, status, exemption status
+
+        // uploading exemption -> file, remarks 
+
+        // changing password -> current password, new password, confirmed password
+
+
         Route::apiResource('roles', RoleController::class);
         Route::apiResource('permissions', PermissionController::class);
 

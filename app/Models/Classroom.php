@@ -12,7 +12,6 @@ class Classroom extends Model
     use Searchable;
 
     protected $fillable = [
-        'subject_id',
         'section_id',
         'venue_id',
         'name',

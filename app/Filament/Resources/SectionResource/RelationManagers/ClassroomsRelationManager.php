@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\SectionResource\RelationManagers;
 
+use App\Models\Venue;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Resources\{Form, Table};
@@ -14,6 +16,7 @@ use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Columns\TextColumn;
 
 class ClassroomsRelationManager extends RelationManager
 {
@@ -26,47 +29,25 @@ class ClassroomsRelationManager extends RelationManager
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Grid::make(['default' => 0])->schema([
-                Select::make('subject_id')
-                    ->rules(['exists:subjects,id'])
-                    ->relationship('subject', 'name')
-                    ->searchable()
-                    ->placeholder('Select subject')
-                    ->columnSpan([
-                        'default' => 4,
-                        'md' => 4,
-                        'lg' => 4,
-                    ]),
 
-                // Select::make('lecturer_id')
-                //     ->rules(['exists:lecturers,id'])
-                //     ->relationship('lecturer', 'staff_id')
-                //     ->searchable()
-                //     ->placeholder('Select lecturer')
-                //     ->columnSpan([
-                //         'default' => 4,
-                //         'md' => 4,
-                //         'lg' => 4,
-                //     ]),
-
-                Select::make('venue_id')
-                    ->rules(['exists:venues,id'])
-                    ->relationship('venue', 'name')
-                    ->searchable()
-                    ->placeholder('Select venue')
-                    ->columnSpan([
-                        'default' => 4,
-                        'md' => 4,
-                        'lg' => 4,
-                    ]),
-
+            Grid::make(['default' => 12])->schema([
                 TextInput::make('name')
                     ->rules(['max:255', 'string'])
                     ->placeholder('Enter lecture or lab')
                     ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
+                    ]),
+
+                Select::make('venue_id')
+                    ->options(Venue::pluck('name', 'id'))
+                    ->searchable()
+                    ->placeholder('Select venue')
+                    ->columnSpan([
+                        'default' => 6,
+                        'md' => 6,
+                        'lg' => 6,
                     ]),
 
                 DateTimePicker::make('start_at')
@@ -96,15 +77,20 @@ class ClassroomsRelationManager extends RelationManager
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('subject.name')
-                    ->limit(50),
-                Tables\Columns\TextColumn::make('section.name')
-                    ->limit(50),
                 // Tables\Columns\TextColumn::make('lecturer.user.name')
                 //     ->limit(50)
                 //     ->label('Lecturer'),
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Type')
                     ->limit(50),
+                TextColumn::make('day')
+                    ->getStateUsing(function ($record) {
+                        $startAt = $record->start_at;
+                        $carbonDate = Carbon::parse($startAt);
+                        $dayOfWeek = $carbonDate->format('l');
+
+                        return $dayOfWeek;
+                    }),
                 Tables\Columns\TextColumn::make('start_at'),
                 Tables\Columns\TextColumn::make('end_at'),
             ])
