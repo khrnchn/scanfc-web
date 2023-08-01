@@ -34,6 +34,8 @@ Route::middleware(['auth:sanctum', 'verified'])
     })
     ->name('dashboard');
 
+Route::get('/read-nfc', 'NFCController@readNFC');
+
 Route::prefix('/')
     ->middleware(['auth:sanctum', 'verified'])
     ->group(function () {

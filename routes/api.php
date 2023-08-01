@@ -53,13 +53,11 @@ Route::name('api.')
     ->middleware('auth:sanctum')
     ->group(function () {
 
-        // registration step 1 -> full name, nickname, email, password, matric id, phone number
+        // logout
+        Route::get('logout', [AuthController::class, 'logout']);
 
-        // registration step 2 -> email verification OTP
-        
-        // forgot password -> email
-
-        // reset password -> password reset OTP
+        // get current login user details
+        Route::get('me', [AuthController::class, 'me']);
 
         // displaying list of today's classes
 
@@ -70,7 +68,7 @@ Route::name('api.')
         // face to face class (nfc) -> attend class (status)
 
         // face to face class (qr) -> attend class (status)
-        
+
         // displaying history of attendance
 
         // displaying specific class info -> subject name, section, lecturer, start at, end at, status, exemption status
