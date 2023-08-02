@@ -66,7 +66,10 @@ class SectionsRelationManager extends RelationManager
                     ->label('Group')
                     ->limit(50),
                 TextColumn::make('qty')
-                    ->label('Students'),
+                    ->label('Students')
+                    ->getStateUsing(function ($record) {
+                        return $record->students->count();
+                    }),
                 TextColumn::make('lecturer.user.name')
                     ->label('Taught by'),
             ])

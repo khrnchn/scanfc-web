@@ -26,8 +26,8 @@ class ClassroomSeeder extends Seeder
                 'section_id' => $sectionId,
                 'venue_id' => 8,
                 'name' => 'Lab',
-                'start_at' => '2023-07-27 14:00:00',
-                'end_at' => '2023-07-27 16:00:00',
+                'start_at' => '2023-07-26 14:00:00',
+                'end_at' => '2023-07-26 16:00:00',
             ],
             [
                 'section_id' => $sectionId,
@@ -40,8 +40,8 @@ class ClassroomSeeder extends Seeder
                 'section_id' => $sectionId,
                 'venue_id' => 8,
                 'name' => 'Lab',
-                'start_at' => '2023-08-03 14:00:00',
-                'end_at' => '2023-08-03 16:00:00',
+                'start_at' => '2023-08-02 14:00:00',
+                'end_at' => '2023-08-02 16:00:00',
             ],
             [
                 'section_id' => $sectionId,
@@ -54,8 +54,8 @@ class ClassroomSeeder extends Seeder
                 'section_id' => $sectionId,
                 'venue_id' => 8,
                 'name' => 'Lab',
-                'start_at' => '2023-08-10 14:00:00',
-                'end_at' => '2023-08-10 16:00:00',
+                'start_at' => '2023-08-09 14:00:00',
+                'end_at' => '2023-08-09 16:00:00',
             ],
             [
                 'section_id' => $sectionId,
@@ -68,8 +68,8 @@ class ClassroomSeeder extends Seeder
                 'section_id' => $sectionId,
                 'venue_id' => 8,
                 'name' => 'Lab',
-                'start_at' => '2023-08-17 14:00:00',
-                'end_at' => '2023-08-17 16:00:00',
+                'start_at' => '2023-08-16 14:00:00',
+                'end_at' => '2023-08-16 16:00:00',
             ],
             [
                 'section_id' => $sectionId,
@@ -82,8 +82,8 @@ class ClassroomSeeder extends Seeder
                 'section_id' => $sectionId,
                 'venue_id' => 8,
                 'name' => 'Lab',
-                'start_at' => '2023-08-24 14:00:00',
-                'end_at' => '2023-08-24 16:00:00',
+                'start_at' => '2023-08-23 14:00:00',
+                'end_at' => '2023-08-23 16:00:00',
             ],
             [
                 'section_id' => $sectionId,
@@ -96,8 +96,8 @@ class ClassroomSeeder extends Seeder
                 'section_id' => $sectionId,
                 'venue_id' => 8,
                 'name' => 'Lab',
-                'start_at' => '2023-08-31 14:00:00',
-                'end_at' => '2023-08-31 16:00:00',
+                'start_at' => '2023-08-30 14:00:00',
+                'end_at' => '2023-08-30 16:00:00',
             ]
         ];
 

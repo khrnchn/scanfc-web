@@ -60,6 +60,7 @@ Route::name('api.')
         Route::get('me', [AuthController::class, 'me']);
 
         // displaying list of today's classes
+        
 
         // registering matric id -> full name, email, phone no
 
