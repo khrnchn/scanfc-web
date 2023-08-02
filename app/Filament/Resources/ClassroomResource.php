@@ -59,18 +59,6 @@ class ClassroomResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    Select::make('lecturer_id')
-                        ->rules(['exists:lecturers,id'])
-                        ->required()
-                        ->relationship('lecturer', 'staff_id')
-                        ->searchable()
-                        ->placeholder('Lecturer')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
                     TextInput::make('name')
                         ->rules(['max:255', 'string'])
                         ->required()
@@ -79,6 +67,13 @@ class ClassroomResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
+                        ]),
+
+                    Select::make('type')
+                        ->required()
+                        ->options([
+                            '0' => 'Physical',
+                            '1' => 'Online',
                         ]),
 
                     DatePicker::make('start_at')
@@ -116,9 +111,6 @@ class ClassroomResource extends Resource
                 Tables\Columns\TextColumn::make('section.name')
                     ->toggleable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('lecturer.staff_id')
-                    ->toggleable()
-                    ->limit(50),
                 Tables\Columns\TextColumn::make('name')
                     ->toggleable()
                     ->searchable(true, null, true)
@@ -144,12 +136,6 @@ class ClassroomResource extends Resource
                     ->indicator('Section')
                     ->multiple()
                     ->label('Section'),
-
-                SelectFilter::make('lecturer_id')
-                    ->relationship('lecturer', 'staff_id')
-                    ->indicator('Lecturer')
-                    ->multiple()
-                    ->label('Lecturer'),
             ]);
     }
 

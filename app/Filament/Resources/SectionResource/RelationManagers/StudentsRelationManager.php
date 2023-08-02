@@ -82,8 +82,6 @@ class StudentsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('matrix_id')->limit(50),
                 Tables\Columns\TextColumn::make('nfc_tag')->limit(50),
                 Tables\Columns\TextColumn::make('user.name')->limit(50),
-                Tables\Columns\TextColumn::make('faculty.name')->limit(50),
-                Tables\Columns\IconColumn::make('is_active'),
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')

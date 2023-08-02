@@ -28,6 +28,8 @@ use App\Http\Controllers\Api\SectionClassroomsController;
 use App\Http\Controllers\Api\LecturerClassroomsController;
 use App\Http\Controllers\Api\StudentAttendancesController;
 use App\Http\Controllers\Api\ClassroomAttendancesController;
+use App\Http\Controllers\StudentController as ControllersStudentController;
+use App\Models\Classroom;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,13 +62,15 @@ Route::name('api.')
         Route::get('me', [AuthController::class, 'me']);
 
         // displaying list of today's classes
-        
+        Route::get('listOfClassesToday', [ClassroomController::class, 'listOfClassesToday']);
 
         // registering matric id -> full name, email, phone no
+        Route::post('user/registerNfc', [StudentController::class, 'registerNfc'])->name('user.registerNfc');
 
         // scanning matric id -> card uid
 
         // face to face class (nfc) -> attend class (status)
+        Route::post('class/attend', [ClassroomController::class, 'registerNfc'])->name('user.registerNfc');
 
         // face to face class (qr) -> attend class (status)
 

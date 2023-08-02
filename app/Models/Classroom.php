@@ -15,6 +15,7 @@ class Classroom extends Model
         'section_id',
         'venue_id',
         'name',
+        'type',
         'start_at',
         'end_at',
     ];

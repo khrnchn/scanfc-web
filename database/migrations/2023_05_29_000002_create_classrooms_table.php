@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->foreignId('section_id');
             $table->foreignId('venue_id');
             $table->string('name');
+            $table->integer('type');
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
 

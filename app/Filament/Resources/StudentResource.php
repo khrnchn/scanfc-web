@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\StudentResource\Pages;
+use Filament\Tables\Columns\BadgeColumn;
 
 class StudentResource extends Resource
 {
@@ -93,18 +94,35 @@ class StudentResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('matrix_id')
                     ->toggleable()
-                    ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('nfc_tag')
                     ->toggleable()
-                    ->searchable(true, null, true)
                     ->limit(50),
                 Tables\Columns\TextColumn::make('user.name')
                     ->toggleable()
                     ->limit(50),
-                Tables\Columns\TextColumn::make('faculty.name')
-                    ->toggleable()
-                    ->limit(50),
+                BadgeColumn::make('faculty.code')
+                    ->label('Faculty')
+                    ->getStateUsing(function ($record) {
+                        if ($record->faculty_id == 1) {
+                            return 'FSKM';
+                        } else if ($record->faculty_id == 2) {
+                            return 'FPP';
+                        } else if ($record->faculty_id == 3) {
+                            return 'FSSR';
+                        } else if ($record->faculty_id == 4) {
+                            return 'FPN';
+                        } else if ($record->faculty_id == 5) {
+                            return 'FKPM';
+                        } else if ($record->faculty_id == 6) {
+                            return 'FPHP';
+                        }
+
+                        return '';
+                    })
+                    ->colors([
+                        'success',
+                    ]),
                 Tables\Columns\IconColumn::make('is_active')
                     ->toggleable()
                     ->boolean(),

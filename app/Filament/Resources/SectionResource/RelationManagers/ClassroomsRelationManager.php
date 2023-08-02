@@ -35,9 +35,21 @@ class ClassroomsRelationManager extends RelationManager
                     ->rules(['max:255', 'string'])
                     ->placeholder('Enter lecture or lab')
                     ->columnSpan([
-                        'default' => 6,
-                        'md' => 6,
-                        'lg' => 6,
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
+                    ]),
+
+                Select::make('type')
+                    ->required()
+                    ->options([
+                        '0' => 'Physical',
+                        '1' => 'Online',
+                    ])
+                    ->columnSpan([
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
                     ]),
 
                 Select::make('venue_id')
@@ -45,9 +57,9 @@ class ClassroomsRelationManager extends RelationManager
                     ->searchable()
                     ->placeholder('Select venue')
                     ->columnSpan([
-                        'default' => 6,
-                        'md' => 6,
-                        'lg' => 6,
+                        'default' => 4,
+                        'md' => 4,
+                        'lg' => 4,
                     ]),
 
                 DateTimePicker::make('start_at')
