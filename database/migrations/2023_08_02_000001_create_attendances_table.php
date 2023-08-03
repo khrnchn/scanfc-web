@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('classroom_id');
             $table->foreignId('enrollment_id');
             $table->enum('attendance_status', AttendanceStatusEnum::toValues());
-            $table->enum('exemption_status', ExemptionStatusEnum::toValues());
+            $table->enum('exemption_status', ExemptionStatusEnum::toValues())->nullable();
             $table->string('exemption_file')->nullable();
             $table->timestamps();
         });

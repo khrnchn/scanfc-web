@@ -16,7 +16,7 @@ class SectionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->can('view_any_section');
     }
@@ -28,7 +28,7 @@ class SectionPolicy
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Section $section)
+    public function view(User $user, Section $section): bool
     {
         return $user->can('view_section');
     }
@@ -39,7 +39,7 @@ class SectionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return $user->can('create_section');
     }
@@ -51,7 +51,7 @@ class SectionPolicy
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Section $section)
+    public function update(User $user, Section $section): bool
     {
         return $user->can('update_section');
     }
@@ -63,7 +63,7 @@ class SectionPolicy
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Section $section)
+    public function delete(User $user, Section $section): bool
     {
         return $user->can('delete_section');
     }
@@ -74,7 +74,7 @@ class SectionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function deleteAny(User $user)
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_section');
     }
@@ -86,7 +86,7 @@ class SectionPolicy
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Section $section)
+    public function forceDelete(User $user, Section $section): bool
     {
         return $user->can('force_delete_section');
     }
@@ -97,7 +97,7 @@ class SectionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDeleteAny(User $user)
+    public function forceDeleteAny(User $user): bool
     {
         return $user->can('force_delete_any_section');
     }
@@ -109,7 +109,7 @@ class SectionPolicy
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Section $section)
+    public function restore(User $user, Section $section): bool
     {
         return $user->can('restore_section');
     }
@@ -120,7 +120,7 @@ class SectionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restoreAny(User $user)
+    public function restoreAny(User $user): bool
     {
         return $user->can('restore_any_section');
     }
@@ -132,7 +132,7 @@ class SectionPolicy
      * @param  \App\Models\Section  $section
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function replicate(User $user, Section $section)
+    public function replicate(User $user, Section $section): bool
     {
         return $user->can('replicate_section');
     }
@@ -143,7 +143,7 @@ class SectionPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function reorder(User $user)
+    public function reorder(User $user): bool
     {
         return $user->can('reorder_section');
     }

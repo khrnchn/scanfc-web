@@ -5,9 +5,8 @@ namespace App\Enums;
 use Spatie\Enum\Enum;
 
 /**
- * @method static self Accepted()
- * @method static self Rejected()
- * @method static self WaitingForApproval()
+ * @method static self ExemptionNeeded()
+ * @method static self ExemptionSubmitted()
  */
 
 final class ExemptionStatusEnum extends Enum

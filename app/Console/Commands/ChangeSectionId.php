@@ -28,8 +28,10 @@ class ChangeSectionId extends Command
      */
     public function handle()
     {
-        DB::table('classrooms')->update(['section_id' => 2]);
+        $sectionId = 3;
+        
+        DB::table('classrooms')->update(['section_id' => $sectionId]);
 
-        $this->info('All section_id values in the classrooms table have been changed to 1.');
+        $this->info('All section_id values in the classrooms table have been changed to ' . $sectionId);
     }
 }

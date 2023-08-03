@@ -2,12 +2,11 @@
 
 namespace App\Enums;
 
-use Spatie\Enum\Enum;
+use \Spatie\Enum\Enum;
 
 /**
- * @method static self Accepted()
- * @method static self Rejected()
- * @method static self WaitingForApproval()
+ * @method static self Present()
+ * @method static self Absent()
  */
 
 final class AttendanceStatusEnum extends Enum

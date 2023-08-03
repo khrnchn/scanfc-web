@@ -94,7 +94,7 @@ class ClassroomController extends Controller
         $today = Carbon::today();
         $data = $data->whereDate('start_at', $today);
 
-        $data = $data->paginate();
+        $data = $data->latest()->paginate($take);
 
         return $this->return_paginated_api(true, Response::HTTP_OK, null, ClassroomResource::collection($data), null, $this->apiPaginator($data));
     }
@@ -130,6 +130,7 @@ class ClassroomController extends Controller
                     'classroom_id' => $classroomId,
                     'enrollment_id' => $enrollment->id,
                     'attendance_status' => AttendanceStatusEnum::Present(),
+                    'exemption_status' => null,
                 ]);
 
                 return response()->json(['message' => 'Attendance recorded successfully.', 'student' => $student], 200);

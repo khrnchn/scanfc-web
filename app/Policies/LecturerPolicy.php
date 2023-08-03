@@ -16,7 +16,7 @@ class LecturerPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny(User $user)
+    public function viewAny(User $user): bool
     {
         return $user->can('view_any_lecturer');
     }
@@ -28,7 +28,7 @@ class LecturerPolicy
      * @param  \App\Models\Lecturer  $lecturer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Lecturer $lecturer)
+    public function view(User $user, Lecturer $lecturer): bool
     {
         return $user->can('view_lecturer');
     }
@@ -39,7 +39,7 @@ class LecturerPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function create(User $user): bool
     {
         return $user->can('create_lecturer');
     }
@@ -51,7 +51,7 @@ class LecturerPolicy
      * @param  \App\Models\Lecturer  $lecturer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Lecturer $lecturer)
+    public function update(User $user, Lecturer $lecturer): bool
     {
         return $user->can('update_lecturer');
     }
@@ -63,7 +63,7 @@ class LecturerPolicy
      * @param  \App\Models\Lecturer  $lecturer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Lecturer $lecturer)
+    public function delete(User $user, Lecturer $lecturer): bool
     {
         return $user->can('delete_lecturer');
     }
@@ -74,7 +74,7 @@ class LecturerPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function deleteAny(User $user)
+    public function deleteAny(User $user): bool
     {
         return $user->can('delete_any_lecturer');
     }
@@ -86,7 +86,7 @@ class LecturerPolicy
      * @param  \App\Models\Lecturer  $lecturer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDelete(User $user, Lecturer $lecturer)
+    public function forceDelete(User $user, Lecturer $lecturer): bool
     {
         return $user->can('force_delete_lecturer');
     }
@@ -97,7 +97,7 @@ class LecturerPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function forceDeleteAny(User $user)
+    public function forceDeleteAny(User $user): bool
     {
         return $user->can('force_delete_any_lecturer');
     }
@@ -109,7 +109,7 @@ class LecturerPolicy
      * @param  \App\Models\Lecturer  $lecturer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Lecturer $lecturer)
+    public function restore(User $user, Lecturer $lecturer): bool
     {
         return $user->can('restore_lecturer');
     }
@@ -120,7 +120,7 @@ class LecturerPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restoreAny(User $user)
+    public function restoreAny(User $user): bool
     {
         return $user->can('restore_any_lecturer');
     }
@@ -132,7 +132,7 @@ class LecturerPolicy
      * @param  \App\Models\Lecturer  $lecturer
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function replicate(User $user, Lecturer $lecturer)
+    public function replicate(User $user, Lecturer $lecturer): bool
     {
         return $user->can('replicate_lecturer');
     }
@@ -143,7 +143,7 @@ class LecturerPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function reorder(User $user)
+    public function reorder(User $user): bool
     {
         return $user->can('reorder_lecturer');
     }
