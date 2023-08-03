@@ -12,7 +12,7 @@ class ClassroomSeeder extends Seeder
      */
     public function run(): void
     {
-        $sectionId = 1;
+        $sectionId = 2;
 
         $classrooms = [
             [
