@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Enums\AttendanceStatusEnum;
+use App\Enums\ExemptionStatusEnum;
 use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -15,10 +17,15 @@ class Attendance extends Model
         'classroom_id',
         'enrollment_id',
         'attendance_date',
-        'attendance_status', // 'present' or 'absent'
-        'exemption_status',  // 'no_exemption', 'exemption_needed', 'exemption_uploaded'
-        'exemption_file'     // The file path or URL to the uploaded exemption file
+        'attendance_status', 
+        'exemption_status',  
+        'exemption_file'     
     ];
+
+    // protected $casts = [
+    //     'attendance_status' => AttendanceStatusEnum::class, 
+    //     'exemption_status' => ExemptionStatusEnum::class, 
+    // ];
 
     protected $searchableFields = ['*'];
 

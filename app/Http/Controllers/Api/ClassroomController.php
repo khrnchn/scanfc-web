@@ -77,6 +77,9 @@ class ClassroomController extends Controller
         return response()->noContent();
     }
 
+    // to-do:
+    // return response attendance submitted/ not submitted
+    // return subject name
     public function classrooms(Request $request)
     {
         $data = new Classroom;

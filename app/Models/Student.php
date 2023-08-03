@@ -35,14 +35,8 @@ class Student extends Model
         return $this->belongsTo(Faculty::class);
     }
 
-    public function attendances()
-    {
-        return $this->hasMany(Attendance::class);
-    }
-
     public function sections()
     {
         return $this->belongsToMany(Section::class, 'enrollments');
     }
-
 }

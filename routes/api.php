@@ -74,9 +74,12 @@ Route::name('api.')
 
         // face to face class (qr) -> attend class (status)
 
+
         // displaying history of attendance
+        Route::get('history', [AttendanceController::class, 'history']);
 
         // displaying specific class info -> subject name, section, lecturer, start at, end at, status, exemption status
+        Route::get('history/{attendance}', [AttendanceController::class, 'attendance_detail']);
 
         // uploading exemption -> file, remarks 
 

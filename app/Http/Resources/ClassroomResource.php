@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Enums\ClassTypeEnum;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClassroomResource extends JsonResource

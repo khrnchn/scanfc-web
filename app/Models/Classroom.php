@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ClassTypeEnum;
 use App\Models\Scopes\Searchable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -46,5 +47,4 @@ class Classroom extends Model
     {
         return $this->belongsTo(Venue::class);
     }
-    
 }
