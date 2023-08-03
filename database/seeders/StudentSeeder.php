@@ -94,6 +94,7 @@ class StudentSeeder extends Seeder
             if ($user->name !== 'Admin') {
                 $matrixId = mt_rand(1000000000, 9999999999); // Generate random 10-digit matrix_id
                 $student = Student::create([
+                    'nfc_tag' => '',
                     'matrix_id' => $matrixId,
                     'user_id' => $user->id,
                     'faculty_id' => 1,
