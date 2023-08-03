@@ -17,8 +17,8 @@ class ClassroomResource extends JsonResource
             "venue_id" => $this->venue->name,
             "name" => $this->name,
             "type" => $this->type,
-            "start_at" => $this->start_at,
-            "end_at" => $this->end_at,
+            "start_at" => $this->start_at->format('Y-m-d H:i:s'),
+            "end_at" => $this->end_at->format('Y-m-d H:i:s'),
         ];
     }
 }

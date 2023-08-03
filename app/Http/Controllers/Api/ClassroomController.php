@@ -13,6 +13,7 @@ use App\Http\Requests\ClassroomUpdateRequest;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\ApiPaginatorTrait;
+use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
@@ -76,6 +77,8 @@ class ClassroomController extends Controller
     {
         $data = new Classroom;
 
+        $take = request()->get('take', 1000);
+
         $user = Auth::user();
         $student = $user->student;
 
@@ -94,31 +97,21 @@ class ClassroomController extends Controller
 
     public function attend_class(Request $request)
     {
-        $student = auth()->user()->student;
+        try {
+            // Use "windows + v" command to paste clipboard contents into a temporary file
+            exec('powershell.exe Get-Clipboard > clipboard.txt');
 
-        // Validate the input data
-        $validator = Validator::make($request->all(), [
-            'classroom_id' => 'required', 
-            'enrollment_id' => 'required', 
-            'attendance_status' => 'required',
-        ]);
+            // Read the contents of the temporary file
+            $clipboardContents = file_get_contents('clipboard.txt');
 
-        // Check for validation errors
-        if ($validator->fails()) {
-            return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Invalid input data', $validator->errors(), null);
+            // Remove the temporary file
+            unlink('clipboard.txt');
+
+            // Trim and return the clipboard value
+            return trim($clipboardContents);
+        } catch (\Exception $e) {
+            Log::error('Error reading clipboard: ' . $e->getMessage());
+            return null;
         }
-
-        // Get the UUID from the request
-        $classroom_id = $request->get('classroom_id');
-        $enrollment_id = $request->get('enrollment_id');
-        $attendance_status = $request->get('attendance_status');
-
-        $student->update([
-            'classroom_id' => $classroom_id,
-            'enrollment_id' => $enrollment_id,
-            'attendance_status' => $attendance_status,
-        ]);
-
-        return $this->return_api(true, Response::HTTP_OK, 'Successfully attended the class', ['classroom_id' => $classroom_id, 'enrollment_id' => $enrollment_id, 'attendance_status' => $attendance_status,], null);
     }
 }
