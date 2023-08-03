@@ -67,7 +67,7 @@ class StudentController extends Controller
         return response()->noContent();
     }
 
-    public function registerNfc(Student $student, Request $request)
+    public function register_nfc(Student $student, Request $request)
     {
         $student = auth()->user()->student;
 

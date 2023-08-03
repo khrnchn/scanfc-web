@@ -71,7 +71,7 @@ class ClassroomController extends Controller
         return response()->noContent();
     }
 
-    public function listOfClassesToday(Request $request)
+    public function classrooms(Request $request)
     {
         $data = new Classroom;
 

@@ -62,15 +62,15 @@ Route::name('api.')
         Route::get('me', [AuthController::class, 'me']);
 
         // displaying list of today's classes
-        Route::get('listOfClassesToday', [ClassroomController::class, 'listOfClassesToday']);
+        Route::get('classrooms', [ClassroomController::class, 'classrooms']);
 
         // registering matric id -> full name, email, phone no
-        Route::post('user/registerNfc', [StudentController::class, 'registerNfc'])->name('user.registerNfc');
+        Route::post('user/register_nfc', [StudentController::class, 'register_nfc'])->name('user.register_nfc');
 
         // scanning matric id -> card uid
 
         // face to face class (nfc) -> attend class (status)
-        Route::post('class/attend', [ClassroomController::class, 'registerNfc'])->name('user.registerNfc');
+        Route::post('classrooms/{classroom}/attend', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
 
         // face to face class (qr) -> attend class (status)
 
@@ -87,8 +87,6 @@ Route::name('api.')
         Route::apiResource('permissions', PermissionController::class);
 
         Route::apiResource('attendances', AttendanceController::class);
-
-        Route::apiResource('classes', ClassroomController::class);
 
         // Classroom Attendances
         Route::get('/classrooms/{classroom}/attendances', [

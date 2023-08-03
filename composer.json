@@ -20,6 +20,7 @@
         "livewire/livewire": "^2.11",
         "m3m0r7/nfc-for-php": "^0.0.2",
         "nesbot/carbon": "^2.68",
+        "spatie/enum": "^3.13",
         "spatie/laravel-permission": "^5.5",
         "yzalis/identicon": "^2.0"
     },

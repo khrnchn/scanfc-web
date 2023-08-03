@@ -46,4 +46,5 @@ class Classroom extends Model
     {
         return $this->belongsTo(Venue::class);
     }
+    
 }

@@ -1,10 +1,13 @@
 <?php
 
+use App\Enums\AttendanceStatusEnum;
+use App\Enums\ExemptionStatusEnum;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -12,10 +15,11 @@ return new class extends Migration {
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('student_id');
-            $table->unsignedBigInteger('classroom_id');
-            $table->string('status');
-
+            $table->foreignId('classroom_id');
+            $table->foreignId('enrollment_id');
+            $table->enum('attendance_status', AttendanceStatusEnum::toValues());
+            $table->enum('exemption_status', ExemptionStatusEnum::toValues());
+            $table->string('exemption_file')->nullable();
             $table->timestamps();
         });
     }
