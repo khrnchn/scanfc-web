@@ -14,6 +14,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\ApiPaginatorTrait;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
 
 class ClassroomController extends Controller
 {
@@ -89,5 +90,35 @@ class ClassroomController extends Controller
         $data = $data->paginate();
 
         return $this->return_paginated_api(true, Response::HTTP_OK, null, ClassroomResource::collection($data), null, $this->apiPaginator($data));
+    }
+
+    public function attend_class(Request $request)
+    {
+        $student = auth()->user()->student;
+
+        // Validate the input data
+        $validator = Validator::make($request->all(), [
+            'classroom_id' => 'required', 
+            'enrollment_id' => 'required', 
+            'attendance_status' => 'required',
+        ]);
+
+        // Check for validation errors
+        if ($validator->fails()) {
+            return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Invalid input data', $validator->errors(), null);
+        }
+
+        // Get the UUID from the request
+        $classroom_id = $request->get('classroom_id');
+        $enrollment_id = $request->get('enrollment_id');
+        $attendance_status = $request->get('attendance_status');
+
+        $student->update([
+            'classroom_id' => $classroom_id,
+            'enrollment_id' => $enrollment_id,
+            'attendance_status' => $attendance_status,
+        ]);
+
+        return $this->return_api(true, Response::HTTP_OK, 'Successfully attended the class', ['classroom_id' => $classroom_id, 'enrollment_id' => $enrollment_id, 'attendance_status' => $attendance_status,], null);
     }
 }

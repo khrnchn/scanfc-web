@@ -70,7 +70,7 @@ Route::name('api.')
         // scanning matric id -> card uid
 
         // face to face class (nfc) -> attend class (status)
-        Route::post('classrooms/{classroom}/attend', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
+        Route::post('classrooms/{classroom}/attend_class', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
 
         // face to face class (qr) -> attend class (status)
 
