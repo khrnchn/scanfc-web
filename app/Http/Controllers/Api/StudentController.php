@@ -73,7 +73,7 @@ class StudentController extends Controller
 
         // Validate the input data
         $validator = Validator::make($request->all(), [
-            'uuid' => 'required|string', // Add any other validation rules specific to your UUID format
+            'uuid' => 'required|string', 
         ]);
 
         // Check for validation errors
@@ -84,11 +84,18 @@ class StudentController extends Controller
         // Get the UUID from the request
         $uuid = $request->get('uuid');
 
+        // Check if the UUID already exists for another student
+        $existingStudent = Student::where('nfc_tag', $uuid)->first();
+        if ($existingStudent) {
+            return $this->return_api(false, Response::HTTP_CONFLICT, 'UUID already registered to another student', null, null);
+        }
+
         // Update the student's NFC tag
         $student->update(['nfc_tag' => $uuid]);
 
         return $this->return_api(true, Response::HTTP_OK, 'Successfully registered NFC tag', ['uuid' => $uuid], null);
     }
+
 
     public function getNfcTag(Student $student)
     {

@@ -134,14 +134,14 @@ class ClassroomController extends Controller
                     'exemption_status' => null,
                 ]);
 
-                return $this->return_api(true, Response::HTTP_OK, 'Attendance recorded successfully.', $student, null);
+                return $this->return_api(true, Response::HTTP_OK, 'Attendance recorded successfully.', null, null);
             } else {
                 // Student not enrolled in the specified section, attendance failed.
-                return response()->json(['message' => 'Attendance failed, student not enrolled in the specified section.'], 401);
+                return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Student is not enrolled in the section.', null, null);
             }
         } else {
             // UUID doesn't match or student not found, attendance failed.
-            return response()->json(['message' => 'Attendance failed, UUID doesnt match or student not found.'], 401);
+            return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Attendance failed, UUID doesnt match.', null, null);
         }
     }
 }

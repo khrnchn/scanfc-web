@@ -64,10 +64,8 @@ Route::name('api.')
         // displaying list of today's classes
         Route::get('classrooms', [ClassroomController::class, 'classrooms']);
 
-        // registering matric id -> full name, email, phone no
+        // registering nfc card into profile
         Route::post('user/register_nfc', [StudentController::class, 'register_nfc'])->name('user.register_nfc');
-
-        // scanning matric id -> card uid
 
         // face to face class (nfc) -> attend class (status)
         Route::post('classrooms/{classroom}/attend_class', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
@@ -83,8 +81,9 @@ Route::name('api.')
 
         // uploading exemption -> file, remarks 
 
-        // changing password -> current password, new password, confirmed password
 
+        // changing password -> current password, new password, confirmed password
+        Route::post('change_password', [AuthController::class, 'change_password']);
 
         Route::apiResource('roles', RoleController::class);
         Route::apiResource('permissions', PermissionController::class);
