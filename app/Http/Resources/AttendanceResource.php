@@ -15,23 +15,41 @@ class AttendanceResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'attendance_status' => $this->attendance_status,
-            'exemption_status' => $this->exemption_status,
-            'exemption_proof_status' => $this->getExemptionProofStatus(),
+            'attendance_status' => $this->attendanceStatus(),
+            'exemption_status' => $this->exemptionStatus(),
+            // 'exemption_proof_status' => $this->exemptionProofStatus(),
             'classroom' => new ClassroomResource($this->classroom),
         ];
     }
 
-    private function getExemptionProofStatus()
+    // public function exemptionProofStatus()
+    // {
+    //     if ($this->attendance_status == AttendanceStatusEnum::Absent()) {
+    //         if ($this->exemption_status == ExemptionStatusEnum::ExemptionNeeded()) {
+    //             return 'Exemption proof not submited yet.';
+    //         }
+
+    //         return 'Exemption proof submitted.';
+    //     }
+
+    //     return null;
+    // }
+
+    public function attendanceStatus()
     {
-        if ($this->attendance_status == AttendanceStatusEnum::Absent()) {
-            if ($this->exemption_status == ExemptionStatusEnum::ExemptionSubmitted()) {
-                return ExemptionStatusEnum::ExemptionSubmitted()->label;
-            } else {
-                return ExemptionStatusEnum::ExemptionNeeded()->label;
-            }
+        if ($this->attendance_status == AttendanceStatusEnum::Present()) {
+            return AttendanceStatusEnum::Present()->label;
         }
 
-        return null;
+        return AttendanceStatusEnum::Absent()->label;
+    }
+
+    public function exemptionStatus()
+    {
+        if ($this->exemption_status == ExemptionStatusEnum::ExemptionSubmitted()) {
+            return ExemptionStatusEnum::ExemptionSubmitted()->label;
+        }
+
+        return ExemptionStatusEnum::ExemptionNeeded()->label;
     }
 }
