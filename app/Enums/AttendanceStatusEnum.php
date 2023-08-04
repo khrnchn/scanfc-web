@@ -7,6 +7,7 @@ use \Spatie\Enum\Enum;
 /**
  * @method static self Present()
  * @method static self Absent()
+ * @method static self Error()
  */
 
 final class AttendanceStatusEnum extends Enum
@@ -16,6 +17,7 @@ final class AttendanceStatusEnum extends Enum
         return [
             'Present' => 1,
             'Absent' => 2,
+            'Error' => 3,
         ];
     }
 }

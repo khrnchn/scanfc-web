@@ -87,7 +87,7 @@ class AttendanceController extends Controller
 
         // Check if data is empty
         if ($data->isEmpty()) {
-            return response()->json(['message' => 'No history of attendance found.'], Response::HTTP_OK);
+            return $this->return_api(true, Response::HTTP_OK, 'No attendance history.', $data, null);
         }
 
         // Return the attendances as a resource collection

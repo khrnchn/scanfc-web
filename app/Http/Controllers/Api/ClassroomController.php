@@ -77,9 +77,7 @@ class ClassroomController extends Controller
         return response()->noContent();
     }
 
-    // to-do:
     // return response attendance submitted/ not submitted
-    // return subject name
     public function classrooms(Request $request)
     {
         $data = new Classroom;
@@ -97,7 +95,7 @@ class ClassroomController extends Controller
         $today = Carbon::today();
         $data = $data->whereDate('start_at', $today);
 
-        $data = $data->latest()->paginate($take);
+        $data = $data->with('subject')->latest()->paginate($take);
 
         return $this->return_paginated_api(true, Response::HTTP_OK, null, ClassroomResource::collection($data), null, $this->apiPaginator($data));
     }
@@ -136,7 +134,7 @@ class ClassroomController extends Controller
                     'exemption_status' => null,
                 ]);
 
-                return response()->json(['message' => 'Attendance recorded successfully.', 'student' => $student], 200);
+                return $this->return_api(true, Response::HTTP_OK, 'Attendance recorded successfully.', $student, null);
             } else {
                 // Student not enrolled in the specified section, attendance failed.
                 return response()->json(['message' => 'Attendance failed, student not enrolled in the specified section.'], 401);
