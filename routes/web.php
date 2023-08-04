@@ -11,6 +11,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ClassroomController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\FileAccessController;
 use App\Http\Controllers\PermissionController;
 
 /*
@@ -27,6 +28,9 @@ use App\Http\Controllers\PermissionController;
 Route::get('/', function () {
     return view('welcome');
 });
+
+// view exemption file
+Route::get('/exemption/serve/{fileName}', [FileAccessController::class, 'exemptionServe']);
 
 Route::middleware(['auth:sanctum', 'verified'])
     ->get('/dashboard', function () {
