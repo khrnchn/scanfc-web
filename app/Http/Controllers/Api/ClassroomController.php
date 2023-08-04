@@ -102,17 +102,10 @@ class ClassroomController extends Controller
 
     public function attend_class(Request $request)
     {
-        // Use "windows + v" command to paste clipboard contents into a temporary file
-        exec('powershell.exe Get-Clipboard > clipboard.txt');
-
-        // Read the contents of the temporary file
-        $clipboardContents = file_get_contents('clipboard.txt');
-
-        // Remove the temporary file
-        unlink('clipboard.txt');
-
-        // Trim and return the clipboard value
-        $uuidFromClipboard = trim($clipboardContents);
+        exec('powershell.exe Get-Clipboard > ' . public_path('clipboard.txt'));
+        $lines = file(public_path('clipboard.txt'));
+        $latestLine = end($lines);
+        $uuidFromClipboard = trim($latestLine);
 
         $student = auth()->user()->student;
 

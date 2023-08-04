@@ -2,6 +2,8 @@
 
 namespace App\Filament\Resources\SectionResource\RelationManagers;
 
+use App\Enums\AttendanceStatusEnum;
+use App\Models\Attendance;
 use App\Models\Venue;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -14,8 +16,11 @@ use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 
 class ClassroomsRelationManager extends RelationManager
@@ -92,19 +97,32 @@ class ClassroomsRelationManager extends RelationManager
                 // Tables\Columns\TextColumn::make('lecturer.user.name')
                 //     ->limit(50)
                 //     ->label('Lecturer'),
-                Tables\Columns\TextColumn::make('name')
+                BadgeColumn::make('name')
                     ->label('Type')
-                    ->limit(50),
+                    ->limit(30)
+                    ->color(static function ($state): string {
+                        if ($state === 'Lecture') {
+                            return 'success';
+                        }
+
+                        return 'primary';
+                    }),
                 TextColumn::make('day')
                     ->getStateUsing(function ($record) {
                         $startAt = $record->start_at;
                         $carbonDate = Carbon::parse($startAt);
                         $dayOfWeek = $carbonDate->format('l');
 
-                        return $dayOfWeek;
+                        return $dayOfWeek . ', ' . Carbon::parse($record->start_at)->format('d F Y');
                     }),
-                Tables\Columns\TextColumn::make('start_at'),
-                Tables\Columns\TextColumn::make('end_at'),
+                Tables\Columns\TextColumn::make('start_at')
+                    ->formatStateUsing(function ($record) {
+                        return Carbon::parse($record->start_at)->format('h:i a');
+                    }),
+                Tables\Columns\TextColumn::make('end_at')
+                    ->formatStateUsing(function ($record) {
+                        return Carbon::parse($record->end_at)->format('h:i a');
+                    }),
             ])
             ->filters([
                 Tables\Filters\Filter::make('created_at')
@@ -152,6 +170,55 @@ class ClassroomsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Action::make('history')
+                    ->icon('heroicon-o-clipboard-list')
+                    ->hidden(function ($record) {
+                        $today = Carbon::today();
+
+                        if ($record->start_at && $record->start_at->isBefore($today)) {
+                            return false;
+                        }
+
+                        return true;
+                    }),
+                Action::make('attendance')
+                    ->icon('heroicon-o-plus-circle')
+                    ->color('success')
+                    ->hidden(function ($record) {
+                        $today = Carbon::today();
+
+                        if ($record->start_at && $record->start_at->isSameDay($today)) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    ->form([
+                        Textarea::make('uuids')
+                            ->label('Student UUIDs')
+                            ->required(),
+                    ])
+                    ->action(function ($data) {
+
+                        // Get the UUIDs as an array
+                        $uuids = explode("\n", trim($data['uuids']));
+
+                        // Remove any empty elements
+                        $uuids = array_filter($uuids);
+
+                        foreach ($uuids as $uuid) {
+                            // Assuming you have the relevant Classroom ID and other required data
+                            $classroomId = 1; // Replace with the actual Classroom ID
+                            $enrollmentId = 1; // Replace with the actual Enrollment ID
+                        
+                            Attendance::create([
+                                'classroom_id' => $classroomId,
+                                'enrollment_id' => $enrollmentId,
+                                'attendance_status' => AttendanceStatusEnum::Present(),
+                                'exemption_status' => null,
+                            ]);
+                        }
+                    })
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }
