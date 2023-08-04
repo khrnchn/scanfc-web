@@ -3,7 +3,11 @@
 namespace App\Filament\Resources\SectionResource\RelationManagers;
 
 use App\Enums\AttendanceStatusEnum;
+use App\Enums\ExemptionStatusEnum;
 use App\Models\Attendance;
+use App\Models\Enrollment;
+use App\Models\Section;
+use App\Models\Student;
 use App\Models\Venue;
 use Carbon\Carbon;
 use Filament\Forms;
@@ -17,6 +21,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Textarea;
+use Filament\Notifications\Notification;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
@@ -198,26 +203,69 @@ class ClassroomsRelationManager extends RelationManager
                             ->label('Student UUIDs')
                             ->required(),
                     ])
-                    ->action(function ($data) {
+                    ->action(function ($data, $livewire, $record) {
+                        // 1. get uuid for all student that enroll in that section, $enrolledUuids
+                        $studentIds = Enrollment::where('section_id', $record->section_id)->pluck('student_id');
 
-                        // Get the UUIDs as an array
-                        $uuids = explode("\n", trim($data['uuids']));
+                        $enrolledUuids = [];
+                        foreach ($studentIds as $studentId) {
+                            $uuid = Student::where('id', $studentId)->value('nfc_tag');
+                            if ($uuid) {
+                                $enrolledUuids[] = $uuid;
+                            }
+                        }
 
-                        // Remove any empty elements
-                        $uuids = array_filter($uuids);
+                        // 2. For UUIDs that were just pasted, create Attendance models with status 'Present'
+                        $scannedUuids = explode("\n", trim($data['uuids']));
+                        $scannedUuids = array_filter($scannedUuids);
+                        $scannedUuids = array_unique($scannedUuids);
 
-                        foreach ($uuids as $uuid) {
-                            // Assuming you have the relevant Classroom ID and other required data
-                            $classroomId = 1; // Replace with the actual Classroom ID
-                            $enrollmentId = 1; // Replace with the actual Enrollment ID
-                        
+                        foreach ($scannedUuids as $scannedUuid) {
+                            if (in_array($scannedUuid, $enrolledUuids)) {
+                                $studentId = Student::where('nfc_tag', $scannedUuid)->value('id'); //3
+                                $enrollmentId = Enrollment::where([
+                                    'section_id' => $record->section_id,
+                                    'student_id' => $studentId,
+                                ])->value('id'); //7
+
+                                Attendance::create([
+                                    'classroom_id' => $record->id,
+                                    'enrollment_id' => $enrollmentId,
+                                    'attendance_status' => AttendanceStatusEnum::Present(),
+                                    'exemption_status' => null,
+                                    'exemption_file' => null,
+                                ]);
+                            }
+                        }
+
+                        // 3. for uuids that other than that, create attendance model with status Absent
+                        $absentUuids = array_diff($enrolledUuids, $scannedUuids);
+
+                        foreach ($absentUuids as $absentUuid) {
+                            $studentId = Student::where('nfc_tag', $absentUuid)->value('id');
+                            $enrollmentId = Enrollment::where([
+                                'section_id' => $record->section_id,
+                                'student_id' => $studentId,
+                            ])->value('id');
+
                             Attendance::create([
-                                'classroom_id' => $classroomId,
+                                'classroom_id' => $record->id,
                                 'enrollment_id' => $enrollmentId,
-                                'attendance_status' => AttendanceStatusEnum::Present(),
-                                'exemption_status' => null,
+                                'attendance_status' => AttendanceStatusEnum::Absent(),
+                                'exemption_status' => ExemptionStatusEnum::ExemptionNeeded(),
+                                'exemption_file' => null,
                             ]);
                         }
+
+                        $students = Student::whereIn('nfc_tag', $enrolledUuids)->with('user')->get();
+                        $studentNames = $students->pluck('user.name')->implode(', ');
+
+                        Notification::make('attendanceCreated')
+                            ->title('Attendance record success!')
+                            ->body('Successfully recorded attendance for:' . $studentNames)
+                            ->seconds(5)
+                            ->success()
+                            ->send();
                     })
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
