@@ -13,6 +13,7 @@
         "bezhansalleh/filament-shield": "^2.4",
         "filament/filament": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
+        "intervention/image": "^2.7",
         "laravel/framework": "^9.19",
         "laravel/jetstream": "^2.9",
         "laravel/sanctum": "^3.0",

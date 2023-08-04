@@ -176,16 +176,8 @@ class ClassroomsRelationManager extends RelationManager
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
                 Action::make('history')
-                    ->icon('heroicon-o-clipboard-list')
-                    ->hidden(function ($record) {
-                        $today = Carbon::today();
+                    ->icon('heroicon-o-clipboard-list'),
 
-                        if ($record->start_at && $record->start_at->isBefore($today)) {
-                            return false;
-                        }
-
-                        return true;
-                    }),
                 Action::make('attendance')
                     ->icon('heroicon-o-plus-circle')
                     ->color('success')

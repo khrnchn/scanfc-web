@@ -76,11 +76,8 @@ Route::name('api.')
         // displaying history of attendance
         Route::get('history', [AttendanceController::class, 'history']);
 
-        // displaying specific class info -> subject name, section, lecturer, start at, end at, status, exemption status
-        Route::get('history/{attendance}', [AttendanceController::class, 'attendance_detail']);
-
         // uploading exemption -> file, remarks 
-
+        Route::post('history/{attendance}/upload_exemption', [AttendanceController::class, 'upload_exemption'])->name('attendance.upload_exemption');
 
         // changing password -> current password, new password, confirmed password
         Route::post('change_password', [AuthController::class, 'change_password']);
