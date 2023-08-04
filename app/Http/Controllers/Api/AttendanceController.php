@@ -87,7 +87,7 @@ class AttendanceController extends Controller
 
         // Check if data is empty
         if ($data->isEmpty()) {
-            return $this->return_api(true, Response::HTTP_OK, 'No attendance history.', AttendanceResource::collection($data), null, $this->apiPaginator($data));
+            return $this->return_paginated_api(true, Response::HTTP_OK, 'No attendance history.', AttendanceResource::collection($data), null, $this->apiPaginator($data));
         }
 
         // Return the attendances as a resource collection
