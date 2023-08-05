@@ -274,7 +274,7 @@ class ClassroomsRelationManager extends RelationManager
                             $uuid = Student::where('id', $studentId)->value('nfc_tag');
                             if ($uuid) {
                                 $enrolledUuids[] = $uuid;
-                            }
+                            } 
                         }
 
                         // 2. For UUIDs that were just pasted, create Attendance models with status 'Present'
@@ -319,17 +319,27 @@ class ClassroomsRelationManager extends RelationManager
                             ]);
                         }
 
-                        $record->update(['hasRecordedAttendance' => true]);
-
                         $students = Student::whereIn('nfc_tag', $scannedUuids)->with('user')->get();
-                        $studentNames = $students->pluck('user.name')->implode(', ');
 
-                        Notification::make('attendanceCreated')
-                            ->title('Attendance record success!')
-                            ->body('Successfully recorded attendance for: ' . $studentNames)
-                            ->seconds(5)
-                            ->success()
-                            ->send();
+                        if ($students) {
+                            $studentNames = $students->pluck('user.name')->implode(', ');
+                            
+                            $record->update(['hasRecordedAttendance' => true]);
+
+                            Notification::make('attendanceCreated')
+                                ->title('Attendance record success!')
+                                ->body('Successfully recorded attendance for: ' . $studentNames)
+                                ->seconds(5)
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make('attendanceFailed')
+                                ->title('Attendance record failed!')
+                                ->body('Failed to record attendance!')
+                                ->seconds(5)
+                                ->danger()
+                                ->send();
+                        }
                     })
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);

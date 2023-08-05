@@ -34,14 +34,14 @@ class ClassroomResource extends JsonResource
     {
         $status = Attendance::where('classroom_id', $this->id)->value('attendance_status');
 
-        if ($status) {
-            if ($status == AttendanceStatusEnum::Present()) {
-                return AttendanceStatusEnum::Present()->label;
-            }
-
-            return AttendanceStatusEnum::Absent()->label;
+        if ($status === null) {
+            return AttendanceStatusEnum::Error()->label;
         }
 
-        return AttendanceStatusEnum::Error()->label;
+        if ($status == AttendanceStatusEnum::Present()) {
+            return AttendanceStatusEnum::Present()->label;
+        }
+
+        return AttendanceStatusEnum::Absent()->label;
     }
 }
