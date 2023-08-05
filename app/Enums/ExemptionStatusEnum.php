@@ -23,7 +23,7 @@ final class ExemptionStatusEnum extends Enum
     {
         return [
             'ExemptionNeeded' => __('Exemption needed'),
-            'ExemptionSubmitted' => __('Exemption submitted'),
+            'ExemptionSubmitted' => __('Exemption submitted'), 
         ];
     }
 }

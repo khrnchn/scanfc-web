@@ -19,6 +19,7 @@ class Classroom extends Model
         'type',
         'start_at',
         'end_at',
+        'hasRecordedAttendance',
     ];
 
     protected $searchableFields = ['*'];

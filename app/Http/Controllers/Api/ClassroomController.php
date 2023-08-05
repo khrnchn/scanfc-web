@@ -137,4 +137,33 @@ class ClassroomController extends Controller
             return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Attendance failed, UUID doesnt match.', null, null);
         }
     }
+
+    public function attend_online_class(Classroom $classroom, Request $request)
+    {
+        $student = auth()->user()->student;
+
+        $classroomId = $request->input('classroom_id');
+
+        if ($classroom->hasRecordedAttendance == false) {
+            if ($classroomId == $classroom->id) {
+
+                $enrollment = Enrollment::where([
+                    'section_id' => $classroom->section->id,
+                    'student_id' => $student->id,
+                ])->first();
+
+                $attendance = Attendance::create([
+                    'classroom_id' => $classroomId,
+                    'enrollment_id' => $enrollment->id,
+                    'attendance_status' => AttendanceStatusEnum::Present(),
+                    'exemption_status' => null,
+                ]);
+
+                return $this->return_api(true, Response::HTTP_OK, 'Attendance recorded successfully.', null, null);
+            }
+            return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Scanned classroom and current classroom doesnt match.', null, null);
+        }
+
+        return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Attendance failed, attendance is closed.', null, null);
+    }
 }

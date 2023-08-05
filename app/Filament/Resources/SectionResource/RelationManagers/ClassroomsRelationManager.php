@@ -3,8 +3,10 @@
 namespace App\Filament\Resources\SectionResource\RelationManagers;
 
 use App\Enums\AttendanceStatusEnum;
+use App\Enums\ClassTypeEnum;
 use App\Enums\ExemptionStatusEnum;
 use App\Models\Attendance;
+use App\Models\Classroom;
 use App\Models\Enrollment;
 use App\Models\Section;
 use App\Models\Student;
@@ -20,6 +22,7 @@ use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\MultiSelectFilter;
@@ -27,6 +30,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Contracts\View\View;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class ClassroomsRelationManager extends RelationManager
 {
@@ -175,20 +180,85 @@ class ClassroomsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Action::make('qr')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qrcode')
+                    ->color('danger')
+                    ->hidden(function ($record) {
+                        if ($record->type != ClassTypeEnum::Physical()->value) {
+                            if ($record->hasRecordedAttendance == false) {
+                                return false;
+                            }
+                            return true;
+                        }
+
+                        return true;
+                    })
+                    ->modalHeading(function ($record) {
+                        return 'QR Code for section ' . $record->section->name . ', class ' . $record->name;
+                    })
+                    ->modalButton('Stop recording')
+                    ->modalWidth('sm')
+                    ->modalContent(fn ($record): View => view(
+                        'filament.pages.displayQr',
+                        ['record' => $record],
+                    ))
+                    ->action(function ($record) {
+                        $record->update(['hasRecordedAttendance' => true]);
+
+                        $enrolledIds = Enrollment::where('section_id', $record->section_id)->pluck('id');
+                        $attendedIds = Attendance::where('classroom_id', $record->id)->pluck('enrollment_id');
+
+                        $notAttendedIds = $enrolledIds->diff($attendedIds);
+
+                        foreach ($notAttendedIds as $enrollmentId) {
+                            $attendance = Attendance::create([
+                                'classroom_id' => $record->id,
+                                'enrollment_id' => $enrollmentId,
+                                'attendance_status' => AttendanceStatusEnum::Absent(),
+                                'exemption_status' => ExemptionStatusEnum::ExemptionNeeded(),
+                            ]);
+                        }
+
+                        // notification
+                        $scannedStudentsName = [];
+                        $enrollmentIds = Attendance::where('classroom_id', $record->id)->pluck('enrollment_id');
+
+                        foreach ($enrollmentIds as $enrollmentId) {
+                            $enrollment = Enrollment::where('id', $enrollmentId)->first();
+                            $name = $enrollment->student->user->name;
+                            $scannedStudentsName[] = $name;
+                        }
+
+                        $scannedStudentsNamesString = implode(', ', $scannedStudentsName);
+
+                        Notification::make('attendanceCreated')
+                            ->title('Attendance record success!')
+                            ->body('Successfully recorded attendance for: ' . $scannedStudentsNamesString)
+                            ->seconds(5)
+                            ->success()
+                            ->send();
+                    }),
+
                 Action::make('history')
-                    ->icon('heroicon-o-clipboard-list'),
+                    ->icon('heroicon-o-clipboard-list')
+                    ->hidden(fn ($record) => $record->hasRecordedAttendance == false),
 
                 Action::make('attendance')
                     ->icon('heroicon-o-plus-circle')
                     ->color('success')
+                    ->modalButton('Submit attendance')
+                    ->modalWidth('sm')
                     ->hidden(function ($record) {
                         $today = Carbon::today();
 
-                        if ($record->start_at && $record->start_at->isSameDay($today)) {
-                            return false;
+                        // Show the action button if it's the current day
+                        if (!$record->start_at || !$record->start_at->isSameDay($today)) {
+                            return true;
                         }
 
-                        return true;
+                        // Hide the action button if attendance is already recorded or it's an online class
+                        return $record->hasRecordedAttendance || $record->type === ClassTypeEnum::Online()->value;
                     })
                     ->form([
                         Textarea::make('uuids')
@@ -249,12 +319,14 @@ class ClassroomsRelationManager extends RelationManager
                             ]);
                         }
 
-                        $students = Student::whereIn('nfc_tag', $enrolledUuids)->with('user')->get();
+                        $record->update(['hasRecordedAttendance' => true]);
+
+                        $students = Student::whereIn('nfc_tag', $scannedUuids)->with('user')->get();
                         $studentNames = $students->pluck('user.name')->implode(', ');
 
                         Notification::make('attendanceCreated')
                             ->title('Attendance record success!')
-                            ->body('Successfully recorded attendance for:' . $studentNames)
+                            ->body('Successfully recorded attendance for: ' . $studentNames)
                             ->seconds(5)
                             ->success()
                             ->send();

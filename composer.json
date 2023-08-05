@@ -20,6 +20,7 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.11",
         "nesbot/carbon": "^2.68",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/enum": "^3.13",
         "spatie/laravel-permission": "^5.5",
         "yzalis/identicon": "^2.0"
