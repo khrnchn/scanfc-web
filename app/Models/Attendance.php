@@ -19,7 +19,8 @@ class Attendance extends Model
         'attendance_date',
         'attendance_status', 
         'exemption_status',  
-        'exemption_file'     
+        'exemption_file',
+        'exemption_remarks'
     ];
 
     // protected $casts = [
