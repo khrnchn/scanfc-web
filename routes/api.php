@@ -71,7 +71,7 @@ Route::name('api.')
         Route::post('classrooms/{classroom}/attend_class', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
 
         // face to face class (qr) -> attend class (status)
-        
+         
 
         // displaying history of attendance
         Route::get('history', [AttendanceController::class, 'history']);
