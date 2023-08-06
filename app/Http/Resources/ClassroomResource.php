@@ -38,7 +38,7 @@ class ClassroomResource extends JsonResource
         $enrollment = Enrollment::where([
             'section_id' => $this->section->id,
             'student_id' => $student->id,
-        ]);
+        ])->get();
 
         $status = Attendance::where([
             'classroom_id' => $this->id,
