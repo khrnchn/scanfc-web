@@ -2,16 +2,17 @@
 
 namespace App\Filament\Resources\ClassroomResource\RelationManagers;
 
+use App\Enums\AttendanceStatusEnum;
+use App\Enums\ExemptionStatusEnum;
+use Carbon\Carbon;
 use Filament\Forms;
 use Filament\Tables;
 use Filament\Resources\{Form, Table};
-use Filament\Forms\Components\Grid;
-use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
-use Illuminate\Database\Eloquent\Builder;
-use Filament\Forms\Components\BelongsToSelect;
-use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables\Actions\Action;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\TextColumn;
+use Illuminate\Contracts\View\View;
 
 class AttendancesRelationManager extends RelationManager
 {
@@ -21,85 +22,54 @@ class AttendancesRelationManager extends RelationManager
 
     public static function form(Form $form): Form
     {
-        return $form->schema([
-            Grid::make(['default' => 0])->schema([
-                Select::make('student_id')
-                    ->rules(['exists:students,id'])
-                    ->relationship('student', 'matrix_id')
-                    ->searchable()
-                    ->placeholder('Student')
-                    ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
-                    ]),
-
-                TextInput::make('status')
-                    ->rules(['max:255', 'string'])
-                    ->placeholder('Status')
-                    ->columnSpan([
-                        'default' => 12,
-                        'md' => 12,
-                        'lg' => 12,
-                    ]),
-            ]),
-        ]);
+        return $form->schema([]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('student.matrix_id')->limit(50),
-                Tables\Columns\TextColumn::make('classroom.name')->limit(50),
-                Tables\Columns\TextColumn::make('status')->limit(50),
-            ])
-            ->filters([
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn(
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '>=',
-                                    $date
-                                )
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn(
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '<=',
-                                    $date
-                                )
-                            );
+                TextColumn::make('enrollment.student.user.name')
+                    ->limit(50),
+                BadgeColumn::make('attendance_status')
+                    ->label('Status')
+                    ->formatStateUsing(function ($record) {
+                        if ($record->attendance_status == AttendanceStatusEnum::Present()) {
+                            return AttendanceStatusEnum::Present()->label;
+                        } else {
+                            if ($record->exemption_status == ExemptionStatusEnum::ExemptionNeeded()) {
+                                return AttendanceStatusEnum::Absent()->label . ' without exemption';
+                            }
+                            return AttendanceStatusEnum::Absent()->label . ' with exemption';
+                        }
+                    })
+                    ->color(static function ($state): string {
+                        if ($state == AttendanceStatusEnum::Present()) {
+                            return 'success';
+                        }
+
+                        return 'danger';
                     }),
+                TextColumn::make('created_at')
+                    ->label('Recorded at')
+                    ->formatStateUsing(fn ($record) => Carbon::parse($record->created_at)->format('d F Y h:i a'))
 
-                MultiSelectFilter::make('student_id')->relationship(
-                    'student',
-                    'matrix_id'
-                ),
-
-                MultiSelectFilter::make('classroom_id')->relationship(
-                    'classroom',
-                    'name'
-                ),
             ])
+            ->filters([])
             ->headerActions([Tables\Actions\CreateAction::make()])
             ->actions([
-                Tables\Actions\EditAction::make(),
                 Tables\Actions\DeleteAction::make(),
+                Action::make('exemption')
+                    ->icon('heroicon-o-document-text')
+                    ->color('danger')
+                    ->hidden(fn ($record) => $record->attendance_status == AttendanceStatusEnum::Present())
+                    ->action(function ($record) {
+                    })
+                    ->modalWidth('sm')
+                    ->modalContent(fn ($record): View => view(
+                        'filament.pages.displayExemption',
+                        ['record' => $record],
+                    ))
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }

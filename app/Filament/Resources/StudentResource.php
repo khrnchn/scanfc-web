@@ -166,4 +166,9 @@ class StudentResource extends Resource
     {
         return static::getModel()::count();
     }
+
+    protected static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
+    }
 }

@@ -5,6 +5,8 @@ namespace App\Filament\Resources\SectionResource\RelationManagers;
 use App\Enums\AttendanceStatusEnum;
 use App\Enums\ClassTypeEnum;
 use App\Enums\ExemptionStatusEnum;
+use App\Filament\Resources\AttendanceResource;
+use App\Filament\Resources\ClassroomResource;
 use App\Models\Attendance;
 use App\Models\Classroom;
 use App\Models\Enrollment;
@@ -22,12 +24,14 @@ use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\View\View;
@@ -49,6 +53,7 @@ class ClassroomsRelationManager extends RelationManager
                 TextInput::make('name')
                     ->rules(['max:255', 'string'])
                     ->placeholder('Enter lecture or lab')
+                    ->required()
                     ->columnSpan([
                         'default' => 4,
                         'md' => 4,
@@ -58,8 +63,8 @@ class ClassroomsRelationManager extends RelationManager
                 Select::make('type')
                     ->required()
                     ->options([
-                        '0' => 'Physical',
-                        '1' => 'Online',
+                        '1' => 'Physical',
+                        '2' => 'Online',
                     ])
                     ->columnSpan([
                         'default' => 4,
@@ -68,6 +73,7 @@ class ClassroomsRelationManager extends RelationManager
                     ]),
 
                 Select::make('venue_id')
+                    ->label('Venue')
                     ->options(Venue::pluck('name', 'id'))
                     ->searchable()
                     ->placeholder('Select venue')
@@ -108,7 +114,7 @@ class ClassroomsRelationManager extends RelationManager
                 //     ->limit(50)
                 //     ->label('Lecturer'),
                 BadgeColumn::make('name')
-                    ->label('Type')
+                    ->searchable()
                     ->limit(30)
                     ->color(static function ($state): string {
                         if ($state === 'Lecture') {
@@ -116,6 +122,21 @@ class ClassroomsRelationManager extends RelationManager
                         }
 
                         return 'primary';
+                    }),
+                BadgeColumn::make('type')
+                    ->limit(30)
+                    ->getStateUsing(function ($record): string {
+                        if ($record->type === ClassTypeEnum::Online()->value) {
+                            return ClassTypeEnum::Online()->label;
+                        }
+                        return ClassTypeEnum::Physical()->label;
+                    })
+                    ->color(static function ($state): string {
+                        if ($state === ClassTypeEnum::Online()->label) {
+                            return 'danger';
+                        }
+
+                        return 'secondary';
                     }),
                 TextColumn::make('day')
                     ->getStateUsing(function ($record) {
@@ -134,52 +155,19 @@ class ClassroomsRelationManager extends RelationManager
                         return Carbon::parse($record->end_at)->format('h:i a');
                     }),
             ])
-            ->filters([
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '>=',
-                                    $date
-                                )
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '<=',
-                                    $date
-                                )
-                            );
-                    }),
-
-                MultiSelectFilter::make('subject_id')->relationship(
-                    'subject',
-                    'name'
-                ),
-
-                MultiSelectFilter::make('section_id')->relationship(
-                    'section',
-                    'name'
-                ),
-            ])
+            ->filters([])
+            ->defaultSort('start_at')
             ->headerActions([Tables\Actions\CreateAction::make()])
             ->actions([
+                Action::make('view')
+                    ->color('secondary')
+                    ->icon('heroicon-s-eye')
+                    ->action(function ($record, $livewire) {
+                        $livewire->redirect(ClassroomResource::getURL('view', $record->id));
+                    }),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+
+                // recording attendance for online class (scan QR code)
                 Action::make('qr')
                     ->label('QR Code')
                     ->icon('heroicon-o-qrcode')
@@ -240,10 +228,17 @@ class ClassroomsRelationManager extends RelationManager
                             ->send();
                     }),
 
-                Action::make('history')
-                    ->icon('heroicon-o-clipboard-list')
-                    ->hidden(fn ($record) => $record->hasRecordedAttendance == false),
+                // monitor classroom's attendance
+                // Action::make('history')
+                //     ->icon('heroicon-o-clipboard-list')
+                //     ->hidden(fn ($record) => $record->hasRecordedAttendance == false)
+                //     ->form([
+                //         Hidden::make('test'),
+                //     ])
+                //     ->action(function ($livewire) {
+                //     }),
 
+                // recording attendance for physical class (scan UUID)
                 Action::make('attendance')
                     ->icon('heroicon-o-plus-circle')
                     ->color('success')
@@ -274,7 +269,7 @@ class ClassroomsRelationManager extends RelationManager
                             $uuid = Student::where('id', $studentId)->value('nfc_tag');
                             if ($uuid) {
                                 $enrolledUuids[] = $uuid;
-                            } 
+                            }
                         }
 
                         // 2. For UUIDs that were just pasted, create Attendance models with status 'Present'
@@ -323,7 +318,7 @@ class ClassroomsRelationManager extends RelationManager
 
                         if ($students) {
                             $studentNames = $students->pluck('user.name')->implode(', ');
-                            
+
                             $record->update(['hasRecordedAttendance' => true]);
 
                             Notification::make('attendanceCreated')
