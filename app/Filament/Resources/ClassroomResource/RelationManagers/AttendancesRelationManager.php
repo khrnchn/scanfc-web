@@ -13,6 +13,8 @@ use Filament\Tables\Actions\Action;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\View\View;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
+use App\Enums\ClassTypeEnum;
 
 class AttendancesRelationManager extends RelationManager
 {
@@ -56,7 +58,23 @@ class AttendancesRelationManager extends RelationManager
 
             ])
             ->filters([])
-            ->headerActions([Tables\Actions\CreateAction::make()])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
+                FilamentExportHeaderAction::make('report')
+                    ->defaultFormat('pdf')
+                    ->withColumns([
+                        TextColumn::make('enrollment.section.name')->label('Group'),
+                        TextColumn::make('classroom.name')->label('Class name'),
+                        TextColumn::make('classroom.type')->label('Class type')->getStateUsing(function ($record) {
+                            if ($record == ClassTypeEnum::Online()) {
+                                return ClassTypeEnum::Online()->label;
+                            }
+
+                            return ClassTypeEnum::Physical()->label;
+                        }),
+                        TextColumn::make('enrollment.section.subject.name')->label('Subject'),
+                    ]),
+            ])
             ->actions([
                 Tables\Actions\DeleteAction::make(),
                 Action::make('exemption')

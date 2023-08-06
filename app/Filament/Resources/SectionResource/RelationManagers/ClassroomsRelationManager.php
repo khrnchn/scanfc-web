@@ -38,6 +38,7 @@ use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Contracts\View\View;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 
 class ClassroomsRelationManager extends RelationManager
 {
@@ -368,6 +369,9 @@ class ClassroomsRelationManager extends RelationManager
                 }),
 
             ])
-            ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+
+            ]);
     }
 }
