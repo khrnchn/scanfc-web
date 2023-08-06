@@ -353,7 +353,20 @@ class ClassroomsRelationManager extends RelationManager
                     }),
 
                 EditAction::make(),
-                DeleteAction::make(),
+                DeleteAction::make()->hidden(function ($record) {
+                    $today = Carbon::today();
+
+                    if ($record->hasRecordedAttendance) {
+                        return true;
+                    }
+
+                    if ($record->start_at->isBefore($today)) {
+                        return true;
+                    }
+
+                    return false;
+                }),
+
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }
