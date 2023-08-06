@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Enums\AttendanceStatusEnum;
 use App\Enums\ClassTypeEnum;
 use App\Models\Attendance;
+use App\Models\Enrollment;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClassroomResource extends JsonResource
