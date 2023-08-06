@@ -1,7 +1,7 @@
 <center>
     <div class="container">
         @if ($record->exemption_file)
-            <img src="http://127.0.0.1:8000/exemption/serve/{{ $record->exemption_file }}" alt="Exemption Image">
+            <img src="https://scanfc-uitm.mahirandigital.com/exemption/serve/{{ $record->exemption_file }}" alt="Exemption Image">
 
             @if ($record->exemption_remarks)
                 <p>Remarks: {{ $record->exemption_remarks }}</p>
