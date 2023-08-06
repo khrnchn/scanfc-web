@@ -173,14 +173,15 @@ class ClassroomsRelationManager extends RelationManager
                     ->icon('heroicon-o-qrcode')
                     ->color('danger')
                     ->hidden(function ($record) {
-                        if ($record->type != ClassTypeEnum::Physical()->value) {
-                            if ($record->hasRecordedAttendance == false) {
-                                return false;
-                            }
+                        $today = Carbon::today();
+
+                        // Show the action button if it's the current day
+                        if (!$record->start_at || !$record->start_at->isSameDay($today)) {
                             return true;
                         }
 
-                        return true;
+                        // Hide the action button if attendance is already recorded or it's an physical class
+                        return $record->hasRecordedAttendance || $record->type === ClassTypeEnum::Physical()->value;
                     })
                     ->modalHeading(function ($record) {
                         return 'QR Code for section ' . $record->section->name . ', class ' . $record->name;
