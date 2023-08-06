@@ -47,7 +47,7 @@ class AssignLecturerRole extends Command
             'view_classroom',
             'view_any_classroom',
             'create_classroom',
-            'edit_classroom',
+            'update_classroom',
             'delete_classroom',
 
             'view_attendance',

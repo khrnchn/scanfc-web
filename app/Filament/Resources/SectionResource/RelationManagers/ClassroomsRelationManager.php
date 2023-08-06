@@ -31,6 +31,8 @@ use Filament\Notifications\Notification;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -44,6 +46,8 @@ class ClassroomsRelationManager extends RelationManager
     protected static ?string $title = 'Schedules';
 
     protected static ?string $recordTitleAttribute = 'name';
+
+    protected static ?string $modelLabel = 'schedule';
 
     public static function form(Form $form): Form
     {
@@ -87,6 +91,11 @@ class ClassroomsRelationManager extends RelationManager
                     ->rules(['date'])
                     ->placeholder('Select start time')
                     ->withoutSeconds()
+                    ->default(function () {
+                        $now = Carbon::now();
+
+                        return $now;
+                    })
                     ->columnSpan([
                         'default' => 6,
                         'md' => 6,
@@ -97,6 +106,11 @@ class ClassroomsRelationManager extends RelationManager
                     ->rules(['date'])
                     ->placeholder('Select end time')
                     ->withoutSeconds()
+                    ->default(function () {
+                        $now = Carbon::now();
+
+                        return $now->addHours(2);
+                    })
                     ->columnSpan([
                         'default' => 6,
                         'md' => 6,
@@ -336,7 +350,10 @@ class ClassroomsRelationManager extends RelationManager
                                 ->danger()
                                 ->send();
                         }
-                    })
+                    }),
+
+                EditAction::make(),
+                DeleteAction::make(),
             ])
             ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
     }
