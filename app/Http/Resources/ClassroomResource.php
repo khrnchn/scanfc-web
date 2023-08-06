@@ -35,14 +35,14 @@ class ClassroomResource extends JsonResource
     {
         $student = auth()->user()->student;
 
-        $enrollment = Enrollment::where([
+        $enrollmentId = Enrollment::where([
             'section_id' => $this->section->id,
             'student_id' => $student->id,
-        ])->get();
+        ])->value('id');
 
         $status = Attendance::where([
             'classroom_id' => $this->id,
-            'enrollment_id'=> $enrollment->id,
+            'enrollment_id'=> $enrollmentId,
         ])->value('attendance_status');
 
         if ($status === null) {
