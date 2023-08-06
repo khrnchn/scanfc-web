@@ -32,7 +32,17 @@ class ClassroomResource extends JsonResource
 
     public function getAttendanceStatus()
     {
-        $status = Attendance::where('classroom_id', $this->id)->value('attendance_status');
+        $student = auth()->user()->student;
+
+        $enrollment = Enrollment::where([
+            'section_id' => $this->section->id,
+            'student_id' => $student->id,
+        ]);
+
+        $status = Attendance::where([
+            'classroom_id' => $this->id,
+            'enrollment_id'=> $enrollment->id,
+        ])->value('attendance_status');
 
         if ($status === null) {
             return AttendanceStatusEnum::Error()->label;
