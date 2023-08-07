@@ -36,19 +36,7 @@ class ClassroomResource extends Resource
     {
         return $form->schema([
             Card::make()->schema([
-                Grid::make(['default' => 0])->schema([
-                    Select::make('subject_id')
-                        ->rules(['exists:subjects,id'])
-                        ->required()
-                        ->relationship('subject', 'name')
-                        ->searchable()
-                        ->placeholder('Subject')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
-
+                Grid::make(['default' => 12])->schema([
                     Select::make('section_id')
                         ->rules(['exists:sections,id'])
                         ->required()
@@ -66,9 +54,9 @@ class ClassroomResource extends Resource
                         ->required()
                         ->placeholder('Name')
                         ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
                         ]),
 
                     Select::make('type')
@@ -76,6 +64,11 @@ class ClassroomResource extends Resource
                         ->options([
                             '0' => 'Physical',
                             '1' => 'Online',
+                        ])
+                        ->columnSpan([
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
                         ]),
 
                     DatePicker::make('start_at')
@@ -83,9 +76,9 @@ class ClassroomResource extends Resource
                         ->required()
                         ->placeholder('Start At')
                         ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
                         ]),
 
                     DatePicker::make('end_at')
@@ -93,9 +86,9 @@ class ClassroomResource extends Resource
                         ->required()
                         ->placeholder('End At')
                         ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
+                            'default' => 6,
+                            'md' => 6,
+                            'lg' => 6,
                         ]),
                 ]),
             ]),

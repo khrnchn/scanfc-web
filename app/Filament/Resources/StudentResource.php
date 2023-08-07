@@ -138,7 +138,6 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            StudentResource\RelationManagers\AttendancesRelationManager::class,
             StudentResource\RelationManagers\SectionsRelationManager::class,
         ];
     }
@@ -156,5 +155,10 @@ class StudentResource extends Resource
     protected static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    protected static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
     }
 }

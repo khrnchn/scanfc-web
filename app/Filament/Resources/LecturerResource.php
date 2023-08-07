@@ -121,10 +121,7 @@ class LecturerResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            LecturerResource\RelationManagers\ClassroomsRelationManager::class,
-            LecturerResource\RelationManagers\SubjectsRelationManager::class,
-        ];
+        return [];
     }
 
     public static function getPages(): array
