@@ -17,6 +17,8 @@ use App\Filament\Resources\UserResource\RelationManagers\StudentRelationManager;
 use App\Models\Faculty;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Filters\Filter;
+use Illuminate\Database\Eloquent\Builder;
 
 class UserResource extends Resource
 {
@@ -137,7 +139,12 @@ class UserResource extends Resource
                         'success',
                     ]),
             ])
-            ->filters([DateRangeFilter::make('created_at')]);
+            ->filters([
+                Filter::make('student')
+                    ->query(fn (Builder $query): Builder => $query->whereHas('student')),
+                Filter::make('lecturer')
+                    ->query(fn (Builder $query): Builder => $query->whereHas('lecturer')),
+            ]);
     }
 
     public static function getRelations(): array

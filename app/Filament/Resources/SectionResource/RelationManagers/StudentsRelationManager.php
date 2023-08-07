@@ -47,6 +47,7 @@ class StudentsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
+                // action for assigning student into subject
                 Tables\Actions\AttachAction::make()
                     ->label('Assign')
                     ->recordSelectSearchColumns(['user.name'])
@@ -58,7 +59,7 @@ class StudentsRelationManager extends RelationManager
                         // Get all groups belong to this subject
                         $sectionIds = Section::where('subject_id', $subjectId)->pluck('id');
 
-                        // init empty array 
+                        // create empty array 
                         $enrolledStudentIds = [];
                         foreach ($sectionIds as $sectionId) {
                             // get studentId that has enrolled

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\UserResource\RelationManagers;
 
 use App\Models\Faculty;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Form;
@@ -75,9 +76,11 @@ class StudentRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
+                // action for assigning student data to user account
                 Tables\Actions\CreateAction::make()
                     ->label('Assign student data')
                     ->mutateFormDataUsing(function (array $data): array {
+                        // retrieve facultyId
                         $facultyId = Faculty::where('name', $data['faculty_id'])->value('id');
                         $data['faculty_id'] = $facultyId;
 
