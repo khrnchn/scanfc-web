@@ -63,6 +63,7 @@ class StudentRelationManager extends RelationManager
                         if ($record->nfc_tag == '') {
                             return 'No NFC registered';
                         }
+                        return $record->nfc_tag;
                     })
                     ->color(static function ($state): string {
                         if ($state === 'No NFC registered' || '') {
