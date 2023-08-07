@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\StudentResource\Pages;
+use Filament\Forms\Components\Hidden;
 use Filament\Tables\Columns\BadgeColumn;
 
 class StudentResource extends Resource
@@ -72,6 +73,9 @@ class StudentResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
+
+                            Hidden::make('nfc_tag')
+                                ->default(''),
                         ]),
                 ]),
             ]),
