@@ -12,6 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 use Filament\Forms\Components\TextInput;
 use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\UserResource\Pages;
+use App\Filament\Resources\UserResource\RelationManagers\LecturerRelationManager;
+use App\Filament\Resources\UserResource\RelationManagers\StudentRelationManager;
 use App\Models\Faculty;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\BadgeColumn;
@@ -102,9 +104,11 @@ class UserResource extends Resource
             ->poll('60s')
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->sortable()
                     ->toggleable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('email')
+                    ->sortable()
                     ->toggleable()
                     ->limit(50),
                 Tables\Columns\TextColumn::make('phone_no')
@@ -127,7 +131,7 @@ class UserResource extends Resource
                             return 'FPHP';
                         }
 
-                        return '';
+                        return $record->student->faculty->code;
                     })
                     ->colors([
                         'success',
@@ -138,7 +142,9 @@ class UserResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            StudentRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
