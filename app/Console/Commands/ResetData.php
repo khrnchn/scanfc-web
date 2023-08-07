@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Attendance;
 use App\Models\Classroom;
 use App\Models\Student;
+use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -47,6 +48,16 @@ class ResetData extends Command
             $this->info('Successfully cleared ' . $student->user->name . "'s NFC tag.");
         } else {
             $this->error('Student with user_id 2 not found.');
+        }
+
+        // Clear the nfc_tag field for the student Ilwani
+        $user = User::where('email', 'alwani@student.uitm.com')->first();
+        $student = $user->student;
+        if ($student) {
+            $student->update(['nfc_tag' => '']);
+            $this->info('Successfully cleared ' . $student->user->name . "'s NFC tag.");
+        } else {
+            $this->error('Student with email => ilwani@student.uitm.com not found.');
         }
 
         return Command::SUCCESS;
