@@ -9,6 +9,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.0.2",
+        "alperenersoy/filament-export": "^0.3.7",
         "bensampo/laravel-enum": "^6.4",
         "bezhansalleh/filament-shield": "^2.4",
         "filament/filament": "^2.0",
@@ -20,6 +21,7 @@
         "laravel/tinker": "^2.7",
         "livewire/livewire": "^2.11",
         "nesbot/carbon": "^2.68",
+        "simplesoftwareio/simple-qrcode": "^4.2",
         "spatie/enum": "^3.13",
         "spatie/laravel-permission": "^5.5",
         "yzalis/identicon": "^2.0"

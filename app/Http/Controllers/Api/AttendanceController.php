@@ -105,7 +105,8 @@ class AttendanceController extends Controller
         try {
             // Validate the file input
             $request->validate([
-                'exemption_file' => 'required|file|image|max:2048', // Adjust the allowed image types and maximum size as needed
+                'exemption_file' => 'required|file|image|max:2048',
+                'exemption_remarks' => 'nullable|string|max:255',
             ]);
         } catch (ValidationException $e) {
             return $this->return_api(false, Response::HTTP_BAD_REQUEST, 'Invalid file format or size.', null, null);
@@ -137,6 +138,7 @@ class AttendanceController extends Controller
             $attendance->update([
                 'exemption_status' => ExemptionStatusEnum::ExemptionSubmitted(),
                 'exemption_file' => $imageName,
+                'exemption_remarks' => $request->input('exemption_remarks'),
             ]);
 
             // Commit the database transaction if everything is successful
@@ -146,11 +148,11 @@ class AttendanceController extends Controller
         } catch (NotReadableException $e) {
             // Handle image processing error
             DB::rollBack();
-            return $this->return_api(false, Response::HTTP_INTERNAL_SERVER_ERROR, 'Error processing image.', null, null);
+            return $this->return_api(false, Response::HTTP_INTERNAL_SERVER_ERROR, 'Error processing image: ' . $e->getMessage(), null, null);
         } catch (\Exception $e) {
             // Handle other general exceptions
             DB::rollBack();
-            return $this->return_api(false, Response::HTTP_INTERNAL_SERVER_ERROR, 'Error uploading exemption file.', null, null);
+            return $this->return_api(false, Response::HTTP_INTERNAL_SERVER_ERROR, 'Error uploading exemption file: ' . $e->getMessage(), null, null);
         }
     }
 }

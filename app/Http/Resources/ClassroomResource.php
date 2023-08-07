@@ -5,6 +5,7 @@ namespace App\Http\Resources;
 use App\Enums\AttendanceStatusEnum;
 use App\Enums\ClassTypeEnum;
 use App\Models\Attendance;
+use App\Models\Enrollment;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ClassroomResource extends JsonResource
@@ -32,16 +33,26 @@ class ClassroomResource extends JsonResource
 
     public function getAttendanceStatus()
     {
-        $status = Attendance::where('classroom_id', $this->id)->value('attendance_status');
+        $student = auth()->user()->student;
 
-        if ($status) {
-            if ($status == AttendanceStatusEnum::Present()) {
-                return AttendanceStatusEnum::Present()->label;
-            }
+        $enrollmentId = Enrollment::where([
+            'section_id' => $this->section->id,
+            'student_id' => $student->id,
+        ])->value('id');
 
-            return AttendanceStatusEnum::Absent()->label;
+        $status = Attendance::where([
+            'classroom_id' => $this->id,
+            'enrollment_id'=> $enrollmentId,
+        ])->value('attendance_status');
+
+        if ($status === null) {
+            return AttendanceStatusEnum::Error()->label;
         }
 
-        return AttendanceStatusEnum::Error()->label;
+        if ($status == AttendanceStatusEnum::Present()) {
+            return AttendanceStatusEnum::Present()->label;
+        }
+
+        return AttendanceStatusEnum::Absent()->label;
     }
 }

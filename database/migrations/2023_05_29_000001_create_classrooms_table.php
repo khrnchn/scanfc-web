@@ -18,6 +18,7 @@ return new class extends Migration {
             $table->integer('type');
             $table->timestamp('start_at')->nullable();
             $table->timestamp('end_at')->nullable();
+            $table->boolean('hasRecordedAttendance')->default(false);
 
             $table->timestamps();
         });

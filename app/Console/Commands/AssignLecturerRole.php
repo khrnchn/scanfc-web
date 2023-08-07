@@ -37,12 +37,25 @@ class AssignLecturerRole extends Command
         $permissions = [
             'view_faculty',
             'view_any_faculty',
+
             'view_subject',
             'view_any_subject',
+
             'view_section',
             'view_any_section',
+
             'view_classroom',
             'view_any_classroom',
+            'create_classroom',
+            'update_classroom',
+            'delete_classroom',
+
+            'view_attendance',
+            'view_any_attendance',
+            'update_attendance',
+
+            'view_student',
+            'view_any_student'
         ];
 
         foreach ($permissions as $permissionName) {

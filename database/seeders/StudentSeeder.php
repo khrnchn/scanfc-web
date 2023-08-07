@@ -23,8 +23,8 @@ class StudentSeeder extends Seeder
                 'faculty_id' => 1,
             ],
             [
-                'name' => 'Ahmad Hisyam bin Suryanto Sugian',
-                'email' => 'hisyam@student.uitm.com',
+                'name' => 'Ahmad Izzham bin Ahmad Shokor',
+                'email' => 'izzham@student.uitm.com',
                 'phone_no' => '+6012-3894567',
                 'password' => Hash::make('password'),
                 'faculty_id' => 1,

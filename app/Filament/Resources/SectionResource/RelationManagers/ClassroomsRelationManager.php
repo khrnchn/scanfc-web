@@ -3,8 +3,12 @@
 namespace App\Filament\Resources\SectionResource\RelationManagers;
 
 use App\Enums\AttendanceStatusEnum;
+use App\Enums\ClassTypeEnum;
 use App\Enums\ExemptionStatusEnum;
+use App\Filament\Resources\AttendanceResource;
+use App\Filament\Resources\ClassroomResource;
 use App\Models\Attendance;
+use App\Models\Classroom;
 use App\Models\Enrollment;
 use App\Models\Section;
 use App\Models\Student;
@@ -20,13 +24,21 @@ use Filament\Forms\Components\DatePicker;
 use Illuminate\Database\Eloquent\Builder;
 use Filament\Forms\Components\BelongsToSelect;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Textarea;
 use Filament\Notifications\Notification;
 use Filament\Tables\Filters\MultiSelectFilter;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\TextColumn;
+use Illuminate\Contracts\View\View;
+use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use AlperenErsoy\FilamentExport\Actions\FilamentExportHeaderAction;
 
 class ClassroomsRelationManager extends RelationManager
 {
@@ -36,6 +48,8 @@ class ClassroomsRelationManager extends RelationManager
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $modelLabel = 'schedule';
+
     public static function form(Form $form): Form
     {
         return $form->schema([
@@ -44,6 +58,7 @@ class ClassroomsRelationManager extends RelationManager
                 TextInput::make('name')
                     ->rules(['max:255', 'string'])
                     ->placeholder('Enter lecture or lab')
+                    ->required()
                     ->columnSpan([
                         'default' => 4,
                         'md' => 4,
@@ -53,8 +68,8 @@ class ClassroomsRelationManager extends RelationManager
                 Select::make('type')
                     ->required()
                     ->options([
-                        '0' => 'Physical',
-                        '1' => 'Online',
+                        '1' => 'Physical',
+                        '2' => 'Online',
                     ])
                     ->columnSpan([
                         'default' => 4,
@@ -63,6 +78,7 @@ class ClassroomsRelationManager extends RelationManager
                     ]),
 
                 Select::make('venue_id')
+                    ->label('Venue')
                     ->options(Venue::pluck('name', 'id'))
                     ->searchable()
                     ->placeholder('Select venue')
@@ -76,6 +92,11 @@ class ClassroomsRelationManager extends RelationManager
                     ->rules(['date'])
                     ->placeholder('Select start time')
                     ->withoutSeconds()
+                    ->default(function () {
+                        $now = Carbon::now();
+
+                        return $now;
+                    })
                     ->columnSpan([
                         'default' => 6,
                         'md' => 6,
@@ -86,6 +107,11 @@ class ClassroomsRelationManager extends RelationManager
                     ->rules(['date'])
                     ->placeholder('Select end time')
                     ->withoutSeconds()
+                    ->default(function () {
+                        $now = Carbon::now();
+
+                        return $now->addHours(2);
+                    })
                     ->columnSpan([
                         'default' => 6,
                         'md' => 6,
@@ -103,7 +129,7 @@ class ClassroomsRelationManager extends RelationManager
                 //     ->limit(50)
                 //     ->label('Lecturer'),
                 BadgeColumn::make('name')
-                    ->label('Type')
+                    ->searchable()
                     ->limit(30)
                     ->color(static function ($state): string {
                         if ($state === 'Lecture') {
@@ -111,6 +137,21 @@ class ClassroomsRelationManager extends RelationManager
                         }
 
                         return 'primary';
+                    }),
+                BadgeColumn::make('type')
+                    ->limit(30)
+                    ->getStateUsing(function ($record): string {
+                        if ($record->type === ClassTypeEnum::Online()->value) {
+                            return ClassTypeEnum::Online()->label;
+                        }
+                        return ClassTypeEnum::Physical()->label;
+                    })
+                    ->color(static function ($state): string {
+                        if ($state === ClassTypeEnum::Online()->label) {
+                            return 'danger';
+                        }
+
+                        return 'secondary';
                     }),
                 TextColumn::make('day')
                     ->getStateUsing(function ($record) {
@@ -129,66 +170,106 @@ class ClassroomsRelationManager extends RelationManager
                         return Carbon::parse($record->end_at)->format('h:i a');
                     }),
             ])
-            ->filters([
-                Tables\Filters\Filter::make('created_at')
-                    ->form([
-                        Forms\Components\DatePicker::make('created_from'),
-                        Forms\Components\DatePicker::make('created_until'),
-                    ])
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when(
-                                $data['created_from'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '>=',
-                                    $date
-                                )
-                            )
-                            ->when(
-                                $data['created_until'],
-                                fn (
-                                    Builder $query,
-                                    $date
-                                ): Builder => $query->whereDate(
-                                    'created_at',
-                                    '<=',
-                                    $date
-                                )
-                            );
-                    }),
-
-                MultiSelectFilter::make('subject_id')->relationship(
-                    'subject',
-                    'name'
-                ),
-
-                MultiSelectFilter::make('section_id')->relationship(
-                    'section',
-                    'name'
-                ),
-            ])
+            ->filters([])
+            ->defaultSort('start_at')
             ->headerActions([Tables\Actions\CreateAction::make()])
             ->actions([
+                Action::make('view')
+                    ->color('secondary')
+                    ->icon('heroicon-s-eye')
+                    ->action(function ($record, $livewire) {
+                        $livewire->redirect(ClassroomResource::getURL('view', $record->id));
+                    }),
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
-                Action::make('history')
-                    ->icon('heroicon-o-clipboard-list'),
 
-                Action::make('attendance')
-                    ->icon('heroicon-o-plus-circle')
-                    ->color('success')
+                // recording attendance for online class (scan QR code)
+                Action::make('qr')
+                    ->label('QR Code')
+                    ->icon('heroicon-o-qrcode')
+                    ->color('danger')
                     ->hidden(function ($record) {
                         $today = Carbon::today();
 
-                        if ($record->start_at && $record->start_at->isSameDay($today)) {
-                            return false;
+                        // Show the action button if it's the current day
+                        if (!$record->start_at || !$record->start_at->isSameDay($today)) {
+                            return true;
                         }
 
-                        return true;
+                        // Hide the action button if attendance is already recorded or it's an physical class
+                        return $record->hasRecordedAttendance || $record->type === ClassTypeEnum::Physical()->value;
+                    })
+                    ->modalHeading(function ($record) {
+                        return 'QR Code for section ' . $record->section->name . ', class ' . $record->name;
+                    })
+                    ->modalButton('Stop recording')
+                    ->modalWidth('sm')
+                    ->modalContent(fn ($record): View => view(
+                        'filament.pages.displayQr',
+                        ['record' => $record],
+                    ))
+                    ->action(function ($record) {
+                        $record->update(['hasRecordedAttendance' => true]);
+
+                        $enrolledIds = Enrollment::where('section_id', $record->section_id)->pluck('id');
+                        $attendedIds = Attendance::where('classroom_id', $record->id)->pluck('enrollment_id');
+
+                        $notAttendedIds = $enrolledIds->diff($attendedIds);
+
+                        foreach ($notAttendedIds as $enrollmentId) {
+                            $attendance = Attendance::create([
+                                'classroom_id' => $record->id,
+                                'enrollment_id' => $enrollmentId,
+                                'attendance_status' => AttendanceStatusEnum::Absent(),
+                                'exemption_status' => ExemptionStatusEnum::ExemptionNeeded(),
+                            ]);
+                        }
+
+                        // notification
+                        $scannedStudentsName = [];
+                        $enrollmentIds = Attendance::where('classroom_id', $record->id)->pluck('enrollment_id');
+
+                        foreach ($enrollmentIds as $enrollmentId) {
+                            $enrollment = Enrollment::where('id', $enrollmentId)->first();
+                            $name = $enrollment->student->user->name;
+                            $scannedStudentsName[] = $name;
+                        }
+
+                        $scannedStudentsNamesString = implode(', ', $scannedStudentsName);
+
+                        Notification::make('attendanceCreated')
+                            ->title('Attendance record success!')
+                            ->body('Successfully recorded attendance for: ' . $scannedStudentsNamesString)
+                            ->seconds(5)
+                            ->success()
+                            ->send();
+                    }),
+
+                // monitor classroom's attendance
+                // Action::make('history')
+                //     ->icon('heroicon-o-clipboard-list')
+                //     ->hidden(fn ($record) => $record->hasRecordedAttendance == false)
+                //     ->form([
+                //         Hidden::make('test'),
+                //     ])
+                //     ->action(function ($livewire) {
+                //     }),
+
+                // recording attendance for physical class (scan UUID)
+                Action::make('attendance')
+                    ->icon('heroicon-o-plus-circle')
+                    ->color('success')
+                    ->modalButton('Submit attendance')
+                    ->modalWidth('sm')
+                    ->hidden(function ($record) {
+                        $today = Carbon::today();
+
+                        // Show the action button if it's the current day
+                        if (!$record->start_at || !$record->start_at->isSameDay($today)) {
+                            return true;
+                        }
+
+                        // Hide the action button if attendance is already recorded or it's an online class
+                        return $record->hasRecordedAttendance || $record->type === ClassTypeEnum::Online()->value;
                     })
                     ->form([
                         Textarea::make('uuids')
@@ -249,17 +330,48 @@ class ClassroomsRelationManager extends RelationManager
                             ]);
                         }
 
-                        $students = Student::whereIn('nfc_tag', $enrolledUuids)->with('user')->get();
-                        $studentNames = $students->pluck('user.name')->implode(', ');
+                        $students = Student::whereIn('nfc_tag', $scannedUuids)->with('user')->get();
 
-                        Notification::make('attendanceCreated')
-                            ->title('Attendance record success!')
-                            ->body('Successfully recorded attendance for:' . $studentNames)
-                            ->seconds(5)
-                            ->success()
-                            ->send();
-                    })
+                        if ($students) {
+                            $studentNames = $students->pluck('user.name')->implode(', ');
+
+                            $record->update(['hasRecordedAttendance' => true]);
+
+                            Notification::make('attendanceCreated')
+                                ->title('Attendance record success!')
+                                ->body('Successfully recorded attendance for: ' . $studentNames)
+                                ->seconds(5)
+                                ->success()
+                                ->send();
+                        } else {
+                            Notification::make('attendanceFailed')
+                                ->title('Attendance record failed!')
+                                ->body('Failed to record attendance!')
+                                ->seconds(5)
+                                ->danger()
+                                ->send();
+                        }
+                    }),
+
+                EditAction::make(),
+                DeleteAction::make()->hidden(function ($record) {
+                    $today = Carbon::today();
+
+                    if ($record->hasRecordedAttendance) {
+                        return true;
+                    }
+
+                    if ($record->start_at->isBefore($today)) {
+                        return true;
+                    }
+
+                    return false;
+                }),
+
             ])
-            ->bulkActions([Tables\Actions\DeleteBulkAction::make()]);
+            ->bulkActions([
+                Tables\Actions\DeleteBulkAction::make(),
+
+            ]);
     }
 }

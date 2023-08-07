@@ -13,6 +13,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Tables\Filters\SelectFilter;
 use App\Filament\Filters\DateRangeFilter;
 use App\Filament\Resources\StudentResource\Pages;
+use Filament\Forms\Components\Hidden;
 use Filament\Tables\Columns\BadgeColumn;
 
 class StudentResource extends Resource
@@ -40,15 +41,6 @@ class StudentResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    TextInput::make('nfc_tag')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Nfc Tag')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
 
                     Select::make('user_id')
                         ->rules(['exists:users,id'])
@@ -81,6 +73,9 @@ class StudentResource extends Resource
                             'default' => 12,
                             'md' => 12,
                             'lg' => 12,
+
+                            Hidden::make('nfc_tag')
+                                ->default(''),
                         ]),
                 ]),
             ]),
@@ -147,7 +142,6 @@ class StudentResource extends Resource
     public static function getRelations(): array
     {
         return [
-            StudentResource\RelationManagers\AttendancesRelationManager::class,
             StudentResource\RelationManagers\SectionsRelationManager::class,
         ];
     }
@@ -165,5 +159,10 @@ class StudentResource extends Resource
     protected static function getNavigationBadge(): ?string
     {
         return static::getModel()::count();
+    }
+
+    protected static function shouldRegisterNavigation(): bool
+    {
+        return auth()->user()->hasRole('super_admin');
     }
 }
