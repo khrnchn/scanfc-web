@@ -67,9 +67,6 @@ Route::name('api.')
         // registering nfc card into profile
         Route::post('user/register_nfc', [StudentController::class, 'register_nfc'])->name('user.register_nfc');
 
-        // face to face class (nfc) -> attend class (status)
-        Route::post('classrooms/{classroom}/attend_class', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
-
         // face to face class (qr) -> attend class (status)
         Route::post('classrooms/{classroom}/attend_online_class', [ClassroomController::class, 'attend_online_class'])->name('classroom.attend_online_class');
 
@@ -79,9 +76,15 @@ Route::name('api.')
         // uploading exemption -> file, remarks 
         Route::post('history/{attendance}/upload_exemption', [AttendanceController::class, 'upload_exemption'])->name('attendance.upload_exemption');
 
-        // changing password -> current password, new password, confirmed password
+        // changing password -> current password, new password
         Route::post('change_password', [AuthController::class, 'change_password']);
 
+
+
+
+        // face to face class (nfc) -> attend class (status)
+        // Route::post('classrooms/{classroom}/attend_class', [ClassroomController::class, 'attend_class'])->name('classroom.attend_class');
+        
         Route::apiResource('roles', RoleController::class);
         Route::apiResource('permissions', PermissionController::class);
 

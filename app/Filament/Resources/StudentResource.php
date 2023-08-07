@@ -40,15 +40,6 @@ class StudentResource extends Resource
                             'lg' => 12,
                         ]),
 
-                    TextInput::make('nfc_tag')
-                        ->rules(['max:255', 'string'])
-                        ->required()
-                        ->placeholder('Nfc Tag')
-                        ->columnSpan([
-                            'default' => 12,
-                            'md' => 12,
-                            'lg' => 12,
-                        ]),
 
                     Select::make('user_id')
                         ->rules(['exists:users,id'])
