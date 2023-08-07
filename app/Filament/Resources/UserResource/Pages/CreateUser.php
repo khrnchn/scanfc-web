@@ -14,24 +14,10 @@ class CreateUser extends CreateRecord
     protected function handleRecordCreation(array $data): User
     {
         $user = User::create($data);
-        $user->assignRole('lecturer');
+        $user->assignRole('student');
         $permissions = $user->getPermissionsViaRoles();
         $user->givePermissionTo($permissions);
 
-        $lastLecturer = Lecturer::orderBy('id', 'desc')->first();
-
-        if ($lastLecturer) {
-            $lastStaffId = $lastLecturer->staff_id;
-            $staffNumber = intval(substr($lastStaffId, 5)); // Extract the number from the last staff_id
-            $staffNumber++; // Increment the number
-            $staffId = 'STAFF' . str_pad($staffNumber, 3, '0', STR_PAD_LEFT); // Format the new staff_id
-        }
-
-        Lecturer::create([
-            'user_id' => $user->id,
-            'staff_id' => $staffId,
-            'faculty_id' => $user->faculty_id,
-        ]);
 
         return $user;
     }
